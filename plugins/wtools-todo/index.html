@@ -21,16 +21,18 @@
           <button class="primary" type="submit">添加</button>
         </fieldset>
       </form>
-      <div class="tabs" aria-label="筛选">
-        <button type="button" data-filter="pending" aria-pressed="true">待处理</button>
-        <button type="button" data-filter="idea" aria-pressed="false">灵感</button>
-        <button type="button" data-filter="done" aria-pressed="false">已完成</button>
-        <button type="button" data-filter="all" aria-pressed="false">全部</button>
-      </div>
-      <div class="list-tools main-only">
-        <input type="search" id="search" aria-label="搜索记录" placeholder="搜索记录">
-        <button type="button" id="batch" disabled>批量添加</button>
-        <button type="button" id="summary" disabled>AI 总结</button>
+      <div class="list-toolbar">
+        <div class="tabs" role="group" aria-label="筛选">
+          <button type="button" data-filter="pending" aria-pressed="true">待处理</button>
+          <button type="button" data-filter="idea" aria-pressed="false">灵感</button>
+          <button type="button" data-filter="done" aria-pressed="false">已完成</button>
+          <button type="button" data-filter="all" aria-pressed="false">全部</button>
+        </div>
+        <div class="list-tools main-only">
+          <input type="search" id="search" aria-label="搜索记录" placeholder="搜索记录">
+          <button type="button" id="batch" disabled>批量添加</button>
+          <button type="button" id="summary" disabled>AI 总结</button>
+        </div>
       </div>
       <ul id="tasks"></ul>
       <p id="empty">正在读取待办…</p>
@@ -39,8 +41,10 @@
     </section>
     <section class="timer" aria-labelledby="timer-title">
       <h2 id="timer-title">番茄钟</h2>
-      <div class="clock" id="clock" role="timer">25:00</div>
-      <p id="timer-status" role="status">准备专注</p>
+      <div class="timer-face">
+        <div class="clock" id="clock" role="timer">25:00</div>
+        <p id="timer-status" role="status">准备专注</p>
+      </div>
       <fieldset id="timer-controls" disabled>
         <div class="timer-settings">
           <label>模式 <select id="phase"><option value="focus">专注</option><option value="break">休息</option></select></label>

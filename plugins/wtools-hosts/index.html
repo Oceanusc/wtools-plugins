@@ -10,15 +10,30 @@
 <body>
   <header>
     <h1>hosts 切换</h1>
-    <div class="actions">
+    <div class="actions" id="view-actions">
+      <button id="refresh" type="button">刷新</button>
+      <button id="manage" type="button">管理方案</button>
+    </div>
+    <div class="actions" id="scheme-actions" hidden>
+      <button id="back" type="button">返回本机 hosts</button>
       <button id="save" type="button" disabled>保存方案</button>
       <button id="preview" type="button" class="primary" disabled>预览合并</button>
     </div>
   </header>
   <main>
-    <fieldset id="work" disabled>
+    <section id="system-view" class="editor" aria-labelledby="system-label">
+      <div class="config-field">
+        <label id="system-label" for="system-content">本机 hosts（只读）</label>
+        <textarea id="system-content" readonly spellcheck="false" wrap="off"></textarea>
+      </div>
+      <p id="system-status" role="status">正在读取本机 hosts…</p>
+    </section>
+    <fieldset id="work" hidden disabled>
       <aside aria-label="配置方案">
-        <button type="button" id="public" aria-current="true">公共配置 <span>始终参与合并</span></button>
+        <button type="button" id="public" aria-current="true">
+          <strong>公共配置</strong>
+          <span>始终参与合并</span>
+        </button>
         <div class="scheme-header">
           <h2>自定义方案</h2>
           <button type="button" id="add">＋ 新建</button>
@@ -31,14 +46,20 @@
           <label for="name">方案名称</label>
           <input id="name" maxlength="80" autocomplete="off">
         </div>
-        <label id="content-label" for="content">公共配置</label>
-        <textarea id="content" spellcheck="false" placeholder="每行输入 IP 地址和主机名"></textarea>
-        <button type="button" id="remove" hidden>删除方案</button>
-        <p id="help">首次使用时从系统 hosts 读取。之后可在此编辑公共配置。</p>
+        <div class="config-field">
+          <label id="content-label" for="content">公共配置</label>
+          <textarea id="content" spellcheck="false" aria-describedby="help" placeholder="每行输入 IP 地址和主机名"></textarea>
+        </div>
+        <div class="editor-footer">
+          <p id="help">首次使用时从系统 hosts 读取。之后可在此编辑公共配置。</p>
+          <button type="button" id="remove" hidden>删除方案</button>
+        </div>
       </section>
     </fieldset>
-    <p id="status" role="status">正在读取系统配置…</p>
-    <button type="button" id="retry" hidden>重试</button>
+    <div id="scheme-status" class="workspace-status" hidden>
+      <p id="status" role="status">正在读取方案…</p>
+      <button type="button" id="retry" hidden>重试</button>
+    </div>
   </main>
   <dialog id="review" aria-labelledby="review-title">
     <h2 id="review-title">合并预览</h2>

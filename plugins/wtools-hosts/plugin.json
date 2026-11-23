@@ -1,8 +1,8 @@
 {
   "name": "wtools-hosts",
   "title": "hosts 切换",
-  "description": "保存多套 hosts 方案，预览并合并写入 Windows hosts 文件。",
-  "version": "1.0.0",
+  "description": "查看本机 Windows hosts 文件，管理方案并预览合并结果。",
+  "version": "1.0.1",
   "author": "WTools",
   "main": "index.html",
   "platform": ["win32"],

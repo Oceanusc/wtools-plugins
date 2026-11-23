@@ -2,7 +2,7 @@
   "name": "wtools-todo",
   "title": "ToDo 待办",
   "description": "记录待办与灵感，使用桌面便签、番茄钟和本地 AI 总结。",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "WTools",
   "main": "index.html",
   "platform": ["win32"],
