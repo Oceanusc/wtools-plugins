@@ -1,0 +1,21 @@
+{
+  "name": "wtools-process-killer",
+  "title": "进程与端口管理",
+  "author": "WTools",
+  "version": "1.1.0",
+  "description": "查看进程和 TCP / UDP 端口，关闭或重启进程。",
+  "main": "index.html",
+  "preload": "preload.js",
+  "logo": "logo.png",
+  "platform": ["win32"],
+  "features": [
+    { "code": "kill", "explain": "按内存排序查看进程", "cmds": ["kill", "关闭进程", "进程管理"] },
+    { "code": "netstat", "explain": "按端口数排序查看进程", "cmds": ["netstat", "端口占用"] },
+    {
+      "code": "search",
+      "explain": "搜索进程或端口",
+      "mainPush": true,
+      "cmds": [{ "type": "regex", "label": "搜索进程或端口", "match": "/^(?::[0-9]{1,5}|[\\p{L}\\p{N}_@.+() -]+)$/", "minLength": 1, "maxLength": 80 }]
+    }
+  ]
+}

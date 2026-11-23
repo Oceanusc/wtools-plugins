@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>备忘录</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./index.js" defer></script>
+</head>
+<body>
+  <header class="top">
+    <h1>备忘录</h1>
+    <button id="new" type="button" disabled>＋ 新建备忘</button>
+  </header>
+  <main>
+    <aside aria-label="备忘列表">
+      <input id="search" type="search" aria-label="搜索备忘" placeholder="搜索标题或内容" disabled>
+      <p id="list-message">正在读取备忘…</p>
+      <ul id="list"></ul>
+    </aside>
+    <section class="detail" aria-label="备忘编辑">
+      <p id="empty" hidden>选中一条备忘，或新建一条。</p>
+      <form id="editor" hidden>
+        <fieldset>
+          <label for="title">标题</label>
+          <input id="title" maxlength="100" required placeholder="输入标题" autocomplete="off">
+          <label for="body">内容</label>
+          <textarea id="body" maxlength="4000" rows="7" placeholder="记下想记的事…"></textarea>
+          <div class="reminder">
+            <label for="remind-at">桌面提醒</label>
+            <div class="date-row">
+              <input id="remind-at" type="datetime-local">
+              <button id="clear-time" type="button" class="quiet">取消提醒</button>
+            </div>
+            <p id="reminder-status">选填。WTools 在后台运行时也会提醒。</p>
+          </div>
+          <div class="actions">
+            <button id="remove" type="button" class="quiet danger">删除</button>
+            <button type="submit">保存</button>
+          </div>
+        </fieldset>
+      </form>
+      <p id="status" role="status"></p>
+      <button id="retry" type="button" class="quiet" hidden>重试</button>
+    </section>
+  </main>
+</body>
+</html>

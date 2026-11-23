@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>进程与端口管理</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="index.js" defer></script>
+</head>
+<body>
+  <header class="header">
+    <div class="heading">
+      <img src="logo.png" width="38" height="38" alt="">
+      <div>
+        <h1>进程与端口</h1>
+        <p id="summary">正在读取系统进程</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <label class="toggle"><input type="checkbox" id="auto-refresh"> 自动刷新</label>
+      <button id="refresh" type="button" class="button">刷新</button>
+    </div>
+  </header>
+  <div class="filters">
+    <div class="tabs" role="group" aria-label="进程范围">
+      <button id="all" type="button" aria-pressed="true">全部进程</button>
+      <button id="with-ports" type="button" aria-pressed="false">有端口</button>
+    </div>
+    <label class="search"><span class="sr-only">搜索进程、PID 或端口</span><input id="search" type="search" placeholder="进程、PID 或端口"></label>
+  </div>
+  <main class="list" aria-label="进程列表">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col" data-sort="name"><button type="button">进程<span class="sort-arrow" aria-hidden="true"></span></button></th>
+          <th scope="col">PID</th>
+          <th scope="col" data-sort="ports"><button type="button">端口<span class="sort-arrow" aria-hidden="true"></span></button></th>
+          <th scope="col" data-sort="mem"><button type="button">内存<span class="sort-arrow" aria-hidden="true"></span></button></th>
+          <th scope="col" data-sort="cpu" class="cpu"><button type="button">CPU<span class="sort-arrow" aria-hidden="true"></span></button></th>
+          <th scope="col"><span class="sr-only">操作</span></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p id="empty" class="empty" role="status" hidden></p>
+  </main>
+  <footer class="footer">
+    <span id="count"></span>
+    <span id="status" role="status"></span>
+  </footer>
+  <dialog id="details" aria-labelledby="detail-name" aria-describedby="detail-pid">
+    <div class="dialog-header">
+      <div>
+        <h2 id="detail-name"></h2>
+        <p id="detail-pid"></p>
+      </div>
+      <button id="dismiss" type="button" class="button">返回</button>
+    </div>
+    <dl>
+      <dt>进程路径</dt>
+      <dd id="detail-path"></dd>
+      <dt>本地端口</dt>
+      <dd id="detail-ports" class="ports"></dd>
+      <dt>命令行</dt>
+      <dd><pre id="detail-command"></pre></dd>
+    </dl>
+    <div id="confirm" class="confirm" hidden>
+      <p id="confirm-message"></p>
+      <button id="cancel-action" type="button" class="button">取消</button>
+      <button id="apply-action" type="button" class="button danger"></button>
+    </div>
+    <p id="detail-status" role="status"></p>
+    <div class="dialog-actions">
+      <button id="copy-path" type="button" class="button">复制路径</button>
+      <button id="show-file" type="button" class="button">在文件夹中显示</button>
+      <button id="restart" type="button" class="button">重启进程</button>
+      <button id="stop" type="button" class="button danger-outline">关闭进程</button>
+    </div>
+  </dialog>
+</body>
+</html>

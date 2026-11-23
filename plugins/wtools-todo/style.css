@@ -1,0 +1,91 @@
+:root {
+  color-scheme: light dark;
+  font: 14px/1.55 "Segoe UI", "Microsoft YaHei UI", sans-serif;
+  --base: #f6f8f6;
+  --paper: #fff;
+  --ink: #233129;
+  --muted: #516157;
+  --line: #d4ddd6;
+  --accent: #175c50;
+  --active: #dceee8;
+  --time: #183f39;
+  --danger: #a12f40;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --base: #18201e;
+    --paper: #222d29;
+    --ink: #e9f0e9;
+    --muted: #b6c5bd;
+    --line: #46564e;
+    --accent: #176052;
+    --active: #314a3f;
+    --time: #132d28;
+    --danger: #ff9eac;
+  }
+}
+* { box-sizing: border-box; }
+[hidden], .sticky .main-only { display: none !important; }
+body { background: var(--base); color: var(--ink); margin: 0; }
+h1, h2, p, ul { margin: 0; }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 19px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+h1 { font-size: 23px; }
+h2 { font-size: 16px; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(183px, 29%); gap: 12px; padding: 13px 16px; align-items: start; }
+.workspace, .timer { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-width: 0; }
+.timer > h2 { color: var(--muted); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button, input:not([type="checkbox"]), select, textarea { border: 1px solid var(--line); background: var(--paper); border-radius: 7px; padding: 6px 8px; }
+button { cursor: pointer; }
+button:disabled { opacity: .58; cursor: default; }
+button:hover:not(:disabled) { filter: brightness(.92); }
+button.primary { background: var(--accent); color: white; border-color: transparent; }
+:focus-visible { outline: 2px solid #438374; outline-offset: 2px; }
+fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+#quick-fields { display: grid; grid-template-columns: minmax(42px, 1fr) auto auto; gap: 5px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 12px 0 7px; }
+.tabs button { border-color: transparent; padding: 4px 7px; }
+.tabs [aria-pressed="true"] { background: var(--active); }
+.list-tools, .timer-settings, .timer-actions, .model, .dialog-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.list-tools input { flex: 1 1 105px; min-width: 70px; }
+ul { list-style: none; padding: 0; margin-top: 8px; max-height: 52vh; overflow: auto; }
+.task { display: flex; gap: 6px; align-items: flex-start; border-bottom: 1px solid var(--line); padding: 3px 2px; }
+.task input { margin: 11px 2px 0 0; accent-color: var(--accent); }
+.task button { flex: 1; text-align: left; overflow-wrap: anywhere; white-space: pre-wrap; min-width: 0; background: transparent; border-color: transparent; }
+.task .done { color: var(--muted); text-decoration: line-through; }
+#empty, #status, .timer p, dialog p { color: var(--muted); font-size: 12px; margin: 5px 0; }
+.danger, [data-error] { color: var(--danger) !important; }
+.clock {
+  margin-top: 9px;
+  border-radius: 8px;
+  background: var(--time);
+  color: #e1f8ec;
+  text-align: center;
+  letter-spacing: .035em;
+  padding: 6px 0;
+  font: 600 clamp(30px, 5.5vw, 44px)/1.3 "Consolas", monospace;
+}
+.clock[data-finished] { background: #9b4a37; }
+.timer-settings label { font-size: 12px; display: inline-flex; align-items: center; gap: 4px; }
+.timer-settings input { width: 62px; }
+.timer-actions { margin-top: 8px; }
+dialog { width: min(490px, 92vw); max-height: 92vh; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); }
+dialog::backdrop { background: #111e1ab0; }
+dialog label { display: block; margin-top: 7px; }
+textarea { width: 100%; resize: vertical; }
+.dialog-actions { justify-content: flex-end; margin-top: 6px; }
+.sticky header { padding: 8px 10px; }
+.sticky h1 { font-size: 17px; }
+.sticky main { padding: 7px; gap: 7px; }
+.sticky .workspace, .sticky .timer { padding: 8px; }
+.sticky .timer { order: -1; }
+.sticky ul { max-height: 36vh; }
+@media (max-width: 570px) { main { grid-template-columns: minmax(0, 1fr); } }

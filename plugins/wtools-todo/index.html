@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ToDo 待办</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./index.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1 id="page-title">ToDo 待办</h1>
+    <button type="button" id="sticky" class="main-only" disabled>打开桌面便签</button>
+  </header>
+  <main>
+    <section class="workspace" aria-label="待办">
+      <form id="quick">
+        <fieldset id="quick-fields" disabled>
+          <input id="quick-text" maxlength="1000" placeholder="记一条待办或灵感…" aria-label="待办或灵感">
+          <select id="kind" aria-label="记录类型"><option value="task">待办</option><option value="idea">灵感</option></select>
+          <button class="primary" type="submit">添加</button>
+        </fieldset>
+      </form>
+      <div class="tabs" aria-label="筛选">
+        <button type="button" data-filter="pending" aria-pressed="true">待处理</button>
+        <button type="button" data-filter="idea" aria-pressed="false">灵感</button>
+        <button type="button" data-filter="done" aria-pressed="false">已完成</button>
+        <button type="button" data-filter="all" aria-pressed="false">全部</button>
+      </div>
+      <div class="list-tools main-only">
+        <input type="search" id="search" aria-label="搜索记录" placeholder="搜索记录">
+        <button type="button" id="batch" disabled>批量添加</button>
+        <button type="button" id="summary" disabled>AI 总结</button>
+      </div>
+      <ul id="tasks"></ul>
+      <p id="empty">正在读取待办…</p>
+      <p id="status" role="status"></p>
+      <button type="button" id="retry" hidden>重试</button>
+    </section>
+    <section class="timer" aria-labelledby="timer-title">
+      <h2 id="timer-title">番茄钟</h2>
+      <div class="clock" id="clock" role="timer">25:00</div>
+      <p id="timer-status" role="status">准备专注</p>
+      <fieldset id="timer-controls" disabled>
+        <div class="timer-settings">
+          <label>模式 <select id="phase"><option value="focus">专注</option><option value="break">休息</option></select></label>
+          <label>分钟 <input id="minutes" type="number" min="1" max="180" value="25" required></label>
+        </div>
+        <div class="timer-actions">
+          <button type="button" id="toggle-timer" class="primary">开始</button>
+          <button type="button" id="reset">重置</button>
+        </div>
+      </fieldset>
+    </section>
+  </main>
+  <dialog id="edit-dialog" aria-labelledby="edit-title">
+    <h2 id="edit-title"></h2>
+    <form id="edit-form">
+      <label for="edit-text" id="edit-label">内容</label>
+      <textarea id="edit-text" rows="6" required></textarea>
+      <label id="edit-kind-label" for="edit-kind">类型</label>
+      <select id="edit-kind"><option value="task">待办</option><option value="idea">灵感</option></select>
+      <p role="status" id="edit-status"></p>
+      <div class="dialog-actions">
+        <button type="button" id="delete" class="danger" hidden>删除</button>
+        <button type="button" data-close="edit-dialog">取消</button>
+        <button type="submit" class="primary">保存</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="summary-dialog" aria-labelledby="summary-title">
+    <h2 id="summary-title">AI 总结</h2>
+    <p>使用本机 Ollama 总结当前列表，最多 60 条。可直接编辑生成结果。</p>
+    <div class="model">
+      <select id="model" aria-label="本地模型"></select>
+      <button type="button" id="generate" class="primary" disabled>生成总结</button>
+    </div>
+    <label for="summary-text">总结内容</label>
+    <textarea id="summary-text" rows="8"></textarea>
+    <p role="status" id="summary-status"></p>
+    <div class="dialog-actions">
+      <button type="button" data-close="summary-dialog">关闭</button>
+      <button type="button" id="summary-save" disabled>保存为灵感</button>
+    </div>
+  </dialog>
+</body>
+</html>

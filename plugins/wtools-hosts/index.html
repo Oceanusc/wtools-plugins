@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>hosts 切换</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./index.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>hosts 切换</h1>
+    <div class="actions">
+      <button id="save" type="button" disabled>保存方案</button>
+      <button id="preview" type="button" class="primary" disabled>预览合并</button>
+    </div>
+  </header>
+  <main>
+    <fieldset id="work" disabled>
+      <aside aria-label="配置方案">
+        <button type="button" id="public" aria-current="true">公共配置 <span>始终参与合并</span></button>
+        <div class="scheme-header">
+          <h2>自定义方案</h2>
+          <button type="button" id="add">＋ 新建</button>
+        </div>
+        <ul id="profiles"></ul>
+        <p id="empty">暂无方案。勾选后参与合并。</p>
+      </aside>
+      <section class="editor" aria-label="编辑配置">
+        <div id="name-row" hidden>
+          <label for="name">方案名称</label>
+          <input id="name" maxlength="80" autocomplete="off">
+        </div>
+        <label id="content-label" for="content">公共配置</label>
+        <textarea id="content" spellcheck="false" placeholder="每行输入 IP 地址和主机名"></textarea>
+        <button type="button" id="remove" hidden>删除方案</button>
+        <p id="help">首次使用时从系统 hosts 读取。之后可在此编辑公共配置。</p>
+      </section>
+    </fieldset>
+    <p id="status" role="status">正在读取系统配置…</p>
+    <button type="button" id="retry" hidden>重试</button>
+  </main>
+  <dialog id="review" aria-labelledby="review-title">
+    <h2 id="review-title">合并预览</h2>
+    <p id="selection"></p>
+    <p id="conflicts" hidden></p>
+    <label for="result">将写入系统的内容</label>
+    <textarea id="result" rows="8" readonly></textarea>
+    <details>
+      <summary>查看系统当前 hosts</summary>
+      <textarea id="current" rows="5" aria-label="系统当前 hosts" readonly></textarea>
+    </details>
+    <p id="review-status" role="status"></p>
+    <div class="actions">
+      <button type="button" id="cancel">返回编辑</button>
+      <button type="button" id="apply" class="primary">写入系统 hosts</button>
+    </div>
+  </dialog>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "wtools-memo",
+  "title": "备忘录",
+  "description": "记录备忘，并在指定时间收到桌面提醒。",
+  "version": "1.0.0",
+  "author": "WTools",
+  "main": "index.html",
+  "platform": ["win32"],
+  "features": [
+    {
+      "code": "memo",
+      "cmds": ["备忘录", "桌面提醒"]
+    }
+  ]
+}
