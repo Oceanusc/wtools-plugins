@@ -1,4 +1,10 @@
 const byId = (id) => document.getElementById(id);
+const systemView = byId("system-view");
+const systemContent = byId("system-content");
+const systemStatus = byId("system-status");
+const refresh = byId("refresh");
+const manage = byId("manage");
+const back = byId("back");
 const work = byId("work");
 const publicButton = byId("public");
 const profiles = byId("profiles");
@@ -38,6 +44,29 @@ async function request(op, payload = {}) {
 function message(element, text, isError = false) {
   element.textContent = text;
   element.toggleAttribute("data-error", isError);
+}
+
+async function loadSystem() {
+  if (refresh.disabled) return;
+  refresh.disabled = true;
+  message(systemStatus, "正在读取本机 hosts…");
+  try {
+    systemContent.value = await request("current");
+    message(systemStatus, "");
+  } catch (error) {
+    systemContent.value = "";
+    message(systemStatus, error.message, true);
+  } finally {
+    refresh.disabled = false;
+  }
+}
+
+function showSchemes(show) {
+  systemView.hidden = show;
+  byId("view-actions").hidden = show;
+  work.hidden = !show;
+  byId("scheme-actions").hidden = !show;
+  byId("scheme-status").hidden = !show;
 }
 
 function changed() {
@@ -88,6 +117,7 @@ function syncControls() {
   work.disabled = !workspace || busy;
   save.disabled = work.disabled;
   preview.disabled = work.disabled;
+  back.disabled = busy;
   apply.disabled = busy;
   cancel.disabled = busy;
   retry.disabled = busy;
@@ -118,6 +148,17 @@ async function load() {
   retry.hidden = Boolean(workspace);
 }
 
+refresh.addEventListener("click", loadSystem);
+manage.addEventListener("click", async () => {
+  showSchemes(true);
+  await load();
+  back.focus();
+});
+back.addEventListener("click", () => {
+  showSchemes(false);
+  manage.focus();
+  loadSystem();
+});
 publicButton.addEventListener("click", () => select(-1));
 byId("add").addEventListener("click", () => {
   if (workspace.profiles.length >= 64) {
@@ -196,5 +237,7 @@ review.addEventListener("cancel", (event) => {
 });
 review.addEventListener("close", () => { pending = undefined; });
 retry.addEventListener("click", load);
-window.wtools?.onPluginEnter(load);
-load();
+window.wtools?.onPluginEnter(() => {
+  if (!systemView.hidden) loadSystem();
+});
+loadSystem();
