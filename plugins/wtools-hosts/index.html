@@ -1,81 +1,41 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>hosts 切换</title>
-  <link rel="stylesheet" href="./style.css">
-  <script src="./index.js" defer></script>
+  <link rel="stylesheet" href="./vendor/editor.css"><link rel="stylesheet" href="./style.css">
+  <script src="./vendor/editor.js" defer></script><script src="./index.js" defer></script>
 </head>
 <body>
-  <header>
-    <h1>hosts 切换</h1>
-    <div class="actions" id="view-actions">
-      <button id="refresh" type="button">刷新</button>
-      <button id="manage" type="button">管理方案</button>
-    </div>
-    <div class="actions" id="scheme-actions" hidden>
-      <button id="back" type="button">返回本机 hosts</button>
-      <button id="save" type="button" disabled>保存方案</button>
-      <button id="preview" type="button" class="primary" disabled>预览合并</button>
-    </div>
-  </header>
+  <aside class="sidebar">
+    <header class="brand"><span class="brand-icon" aria-hidden="true">⇄</span><div><h1>hosts 切换</h1><p>让环境切换，简单一点</p></div></header>
+    <nav aria-label="配置方案">
+      <button id="system" class="nav-item"><span class="nav-icon">▤</span><span>系统 hosts<small>查看当前生效内容</small></span><span class="tag">只读</span></button>
+      <div class="section-heading">基础配置</div>
+      <button id="public" class="nav-item" aria-current="true"><span class="public-dot"></span><span>公共配置<small>始终参与合并</small></span></button>
+      <div class="section-heading"><span>自定义方案 <b id="profile-count">0</b></span><button id="add" class="icon-button" title="新建方案" aria-label="新建方案">＋</button></div>
+      <div class="segmented" aria-label="方案选择方式"><button id="single" aria-pressed="false">单选</button><button id="multiple" aria-pressed="true">多选</button></div>
+      <ul id="profiles"></ul>
+      <div id="empty" hidden><span>还没有自定义方案</span><p>为开发、测试等环境<br>创建独立的 hosts 片段</p><button id="empty-add">＋ 新建第一个方案</button></div>
+    </nav>
+    <div class="sidebar-bottom"><p>双击方案，即可快速应用</p><div><button id="settings-button">⚙ <span>偏好设置</span></button><button id="help-button" title="使用帮助" aria-label="使用帮助">?</button></div></div>
+  </aside>
   <main>
-    <section id="system-view" class="editor" aria-labelledby="system-label">
-      <div class="config-field">
-        <label id="system-label" for="system-content">本机 hosts（只读）</label>
-        <textarea id="system-content" readonly spellcheck="false" wrap="off"></textarea>
-      </div>
-      <p id="system-status" role="status">正在读取本机 hosts…</p>
+    <header class="topbar"><div class="breadcrumb">工作空间 <span>/</span> <strong id="breadcrumb">公共配置</strong><span id="dirty" class="dirty" hidden title="有未保存的更改"></span></div><button id="refresh" hidden>↻ 重新读取</button><span id="editor-kind" class="tag">基础配置</span></header>
+    <section class="editor-panel" aria-label="hosts 编辑器">
+      <div class="editor-heading"><div><div class="title-row"><h2 id="editor-title">公共配置</h2><span id="readonly" class="tag" hidden>只读</span></div><p id="editor-description">首次使用时读取系统 hosts，作为所有方案的基础。</p></div><button id="more" class="icon-button" aria-label="管理当前方案" title="管理当前方案" hidden>···</button></div>
+      <div class="file-tab"><span aria-hidden="true">#</span><span id="filename">公共配置.hosts</span><span class="file-language">Hosts</span></div>
+      <div id="editor-container"><textarea id="content" aria-label="hosts 内容" spellcheck="false"></textarea></div>
+      <div class="editor-status"><span id="cursor">行 1，列 1</span><span id="line-count">1 行</span><span id="vim-state" hidden>VIM</span><span class="encoding">UTF-8</span></div>
     </section>
-    <fieldset id="work" hidden disabled>
-      <aside aria-label="配置方案">
-        <button type="button" id="public" aria-current="true">
-          <strong>公共配置</strong>
-          <span>始终参与合并</span>
-        </button>
-        <div class="scheme-header">
-          <h2>自定义方案</h2>
-          <button type="button" id="add">＋ 新建</button>
-        </div>
-        <ul id="profiles"></ul>
-        <p id="empty">暂无方案。勾选后参与合并。</p>
-      </aside>
-      <section class="editor" aria-label="编辑配置">
-        <div id="name-row" hidden>
-          <label for="name">方案名称</label>
-          <input id="name" maxlength="80" autocomplete="off">
-        </div>
-        <div class="config-field">
-          <label id="content-label" for="content">公共配置</label>
-          <textarea id="content" spellcheck="false" aria-describedby="help" placeholder="每行输入 IP 地址和主机名"></textarea>
-        </div>
-        <div class="editor-footer">
-          <p id="help">首次使用时从系统 hosts 读取。之后可在此编辑公共配置。</p>
-          <button type="button" id="remove" hidden>删除方案</button>
-        </div>
-      </section>
-    </fieldset>
-    <div id="scheme-status" class="workspace-status" hidden>
-      <p id="status" role="status">正在读取方案…</p>
-      <button type="button" id="retry" hidden>重试</button>
-    </div>
+    <footer class="apply-bar"><div class="merge-summary"><span class="merge-icon" aria-hidden="true">⇄</span><div><strong id="merge-title">公共配置</strong><p id="merge-description">选择方案后，与公共配置合并应用</p></div></div><div class="actions"><button id="save" disabled>保存 <kbd>Ctrl S</kbd></button><button id="preview" class="primary" disabled>应用配置 <span aria-hidden="true">→</span></button></div></footer>
+    <div class="feedback"><p id="status" role="status" aria-live="polite">正在读取配置…</p><button id="retry" hidden>重试</button><span id="applied-state">尚未在本次会话应用</span></div>
   </main>
-  <dialog id="review" aria-labelledby="review-title">
-    <h2 id="review-title">合并预览</h2>
-    <p id="selection"></p>
-    <p id="conflicts" hidden></p>
-    <label for="result">将写入系统的内容</label>
-    <textarea id="result" rows="8" readonly></textarea>
-    <details>
-      <summary>查看系统当前 hosts</summary>
-      <textarea id="current" rows="5" aria-label="系统当前 hosts" readonly></textarea>
-    </details>
-    <p id="review-status" role="status"></p>
-    <div class="actions">
-      <button type="button" id="cancel">返回编辑</button>
-      <button type="button" id="apply" class="primary">写入系统 hosts</button>
-    </div>
-  </dialog>
+  <div id="context-menu" class="context-menu" role="menu" hidden><button data-action="apply" role="menuitem">应用此方案 <span>↵</span></button><hr><button data-action="rename" role="menuitem">重命名</button><button data-action="duplicate" role="menuitem">复制方案</button><button data-action="delete" class="danger" role="menuitem">删除方案</button></div>
+  <dialog id="review" aria-labelledby="review-title"><div class="dialog-heading"><div><span class="eyebrow">READY TO SWITCH</span><h2 id="review-title">确认应用配置</h2></div><button data-close="review" class="icon-button" aria-label="关闭">×</button></div><p id="selection"></p><p id="conflicts" class="warning" hidden></p><label for="result">合并后将写入系统的内容</label><textarea id="result" rows="10" readonly spellcheck="false" wrap="off"></textarea><details><summary>对照系统当前 hosts</summary><textarea id="current" rows="5" aria-label="系统当前 hosts" readonly spellcheck="false" wrap="off"></textarea></details><p id="review-status" role="status"></p><div class="dialog-actions"><button data-close="review">返回编辑</button><button id="apply" class="primary">确认写入系统 hosts</button></div></dialog>
+  <dialog id="profile-dialog" aria-labelledby="profile-dialog-title"><form id="profile-form"><div class="dialog-heading"><h2 id="profile-dialog-title">新建方案</h2><button type="button" data-close="profile-dialog" class="icon-button" aria-label="关闭">×</button></div><label for="profile-name">方案名称</label><input id="profile-name" maxlength="80" required placeholder="例如：开发环境" autocomplete="off"><p id="profile-error" class="danger" role="alert"></p><div class="dialog-actions"><button type="button" data-close="profile-dialog">取消</button><button class="primary" type="submit">确定</button></div></form></dialog>
+  <dialog id="delete-dialog" aria-labelledby="delete-title"><h2 id="delete-title">删除方案</h2><p id="delete-description"></p><p>删除后需保存或应用配置，才会更新已保存的方案。</p><div class="dialog-actions"><button data-close="delete-dialog">取消</button><button id="confirm-delete" class="danger">删除方案</button></div></dialog>
+  <dialog id="settings" aria-labelledby="settings-title"><div class="dialog-heading"><h2 id="settings-title">偏好设置</h2><button data-close="settings" class="icon-button" aria-label="关闭">×</button></div><label for="theme">界面主题</label><select id="theme"><option value="auto">跟随系统</option><option value="light">明亮</option><option value="dark">黑暗</option></select><label class="check-label"><input id="vim" type="checkbox"><span>使用 Vim 模式<small>支持普通、插入、可视模式及 :w 保存</small></span></label><p>偏好设置仅保存在当前设备。</p></dialog>
+  <dialog id="help" aria-labelledby="help-title"><div class="dialog-heading"><h2 id="help-title">使用帮助</h2><button data-close="help" class="icon-button" aria-label="关闭">×</button></div><h3>编辑、组合、应用</h3><p>公共配置首次从系统 hosts 导入，始终参与合并。单击方案进行编辑，勾选参与合并的片段；单选模式只启用一个自定义方案，多选模式按列表顺序合并。保存仅保存方案，应用配置会先展示合并预览。</p><p>双击方案或选择右键菜单的“应用此方案”可快速写入；多选模式会保留其他已勾选方案。检测到冲突时会先打开预览。</p><p><kbd>Ctrl / ⌘ S</kbd> 保存　 <kbd>Ctrl / ⌘ Enter</kbd> 预览应用</p><h3>hosts 文件不可写？</h3><p>打开 <code>C:\Windows\System32\drivers\etc\hosts</code> 的文件属性，取消“只读”。需要时可在“安全 → 编辑”中为当前登录用户勾选“写入”权限，减少重复授权提示。安全软件也可能拦截写入。</p><h3>切换后解析没有更新？</h3><p>插件不会自动清理 DNS 缓存。可以重新打开无痕窗口；在 Windows 终端运行 <code>ipconfig /flushdns</code> 清理系统 DNS 缓存。浏览器还可能保留自己的 DNS 和连接缓存，需要关闭后重新打开。</p></dialog>
 </body>
 </html>

@@ -1,56 +1,17 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>备忘录</title>
-  <link rel="stylesheet" href="./style.css">
-  <script src="./index.js" defer></script>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>备忘快贴</title><link rel="stylesheet" href="./style.css"><script src="./index.js" defer></script>
 </head>
 <body>
-  <header class="top">
-    <h1>备忘录</h1>
-    <button id="new" type="button" class="primary" disabled>＋ 新建备忘</button>
-  </header>
+  <header class="top"><div class="brand"><span class="brand-icon">➤</span><h1>备忘快贴</h1></div><input id="search" type="search" aria-label="搜索收藏" placeholder="搜索（回车粘贴）" autocomplete="off"><button id="info" class="plain" title="使用说明" aria-label="使用说明">⋮</button></header>
   <main>
-    <aside aria-label="备忘列表">
-      <input id="search" type="search" aria-label="搜索备忘" placeholder="搜索标题或内容" disabled>
-      <p id="list-message">正在读取备忘…</p>
-      <ul id="list"></ul>
-    </aside>
-    <section class="detail" aria-label="备忘编辑">
-      <p id="empty" hidden>选中一条备忘，或新建一条。</p>
-      <form id="editor" hidden>
-        <fieldset>
-          <div class="title-field">
-            <label for="title">标题</label>
-            <input id="title" maxlength="100" required placeholder="输入标题" autocomplete="off">
-          </div>
-          <div class="body-field">
-            <label for="body">内容</label>
-            <textarea id="body" maxlength="4000" rows="7" placeholder="记下想记的事…"></textarea>
-          </div>
-          <div class="editor-footer">
-            <div class="reminder">
-              <label for="remind-at">桌面提醒</label>
-              <div class="date-row">
-                <input id="remind-at" type="datetime-local" aria-describedby="reminder-status">
-                <button id="clear-time" type="button">取消提醒</button>
-              </div>
-              <p id="reminder-status">选填。WTools 在后台运行时也会提醒。</p>
-            </div>
-            <div class="actions">
-              <button id="remove" type="button" class="danger">删除</button>
-              <button type="submit" class="primary">保存</button>
-            </div>
-          </div>
-        </fieldset>
-      </form>
-      <div class="editor-status">
-        <p id="status" role="status"></p>
-        <button id="retry" type="button" hidden>重试</button>
-      </div>
-    </section>
+    <aside aria-label="收藏标签"><nav id="tags"></nav><div class="tag-tools"><button id="add-tag" title="新建标签" aria-label="新建标签">＋</button><button id="rename-tag" title="重命名标签" aria-label="重命名标签">✎</button><button id="delete-tag" title="删除标签" aria-label="删除标签">▣</button></div></aside>
+    <section class="collection" aria-label="收藏内容"><div id="list" role="listbox" aria-label="收藏列表"></div><div id="empty" class="empty" hidden><div class="empty-icon">▤</div><h2>收藏常用，随取随贴</h2><p>快速收藏常用「文本」「代码」「图片」</p><p>点击右侧 ＋，添加你的第一条收藏</p></div><section id="getting-started" class="getting-started" aria-label="开始使用" hidden><button id="dismiss-guide" class="dismiss-guide" type="button" aria-label="关闭使用引导" title="关闭使用引导">×</button><h2>把常用内容放在手边</h2><p>收藏文本、代码或图片，选中后按 Enter、→ 或双击即可粘贴。</p><div class="guide-actions"><button id="guide-new" type="button" class="primary">＋ 新建收藏</button><button id="guide-import" type="button">导入旧备忘</button></div></section></section>
+    <div class="tools" role="toolbar" aria-label="收藏操作"><div><button id="paste" class="round primary" title="粘贴（Enter / →）" aria-label="粘贴">➤</button><button id="copy" class="round" title="复制" aria-label="复制">▢</button></div><div><button id="new" class="round primary" title="新建收藏（Ctrl+N）" aria-label="新建收藏">＋</button><button id="edit" class="round" title="编辑（F2）" aria-label="编辑">✎</button><button id="remove" class="round" title="删除" aria-label="删除">▣</button><button id="manage" class="round" title="批量管理" aria-label="批量管理" aria-pressed="false">☷</button></div></div>
   </main>
-</body>
-</html>
+  <footer><span id="count"></span><span id="status" role="status"></span><span class="shortcut">↑ ↓ 选择 · Enter / → 粘贴</span></footer>
+  <dialog id="dialog"><form id="editor"><fieldset><input id="tag" list="tag-options" maxlength="60" aria-label="标签" placeholder="标签（可输入新标签）"><datalist id="tag-options"></datalist><div class="type-row"><label for="type">内容类型</label><select id="type"><option value="text">文本</option><option value="code">代码</option><option value="image">图片</option></select><select id="language" aria-label="代码语言"><option value="auto">自动高亮</option><option value="javascript">JavaScript</option><option value="css">CSS</option><option value="shell">Shell / PowerShell</option><option value="plain">纯文本</option></select></div><textarea id="body" aria-label="收藏内容" placeholder="输入或粘贴文本、代码…" maxlength="200000"></textarea><div id="image-area" hidden><label class="upload" for="file">选择图片，或在此粘贴 / 拖入图片<span>PNG、JPEG、WebP、GIF · 转为 PNG 后不超过 8 MB</span></label><input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden><div class="image-preview" hidden><img id="preview" alt="收藏图片预览"><button id="clear-image" type="button" aria-label="移除图片">×</button></div></div><input id="remark" maxlength="200" aria-label="备注" placeholder="备注"><details><summary>桌面提醒（选填）</summary><input id="remind-at" type="datetime-local" aria-label="提醒时间"><p>旧备忘的提醒保留；图片与超长内容不支持提醒。</p></details><p id="editor-error" role="alert"></p><div class="dialog-actions"><button id="cancel" type="button">⊗　取消</button><button type="submit" class="primary">▣　保存 (Ctrl+S)</button></div></fieldset></form></dialog>
+  <dialog id="help"><h2>备忘快贴</h2><p>快速收藏常用「文本」「代码」「图片」</p><p>Enter 键、向右键、鼠标双击，一键快速粘贴。</p><h3>存储位置</h3><p>文本存储在 WTools 提供的插件本地数据库内，图片存储在本地附件库内，由宿主在本机保存。</p><p>旧版备忘可通过“导入旧备忘”复制到收藏，原记录和提醒保留。</p><button id="import-old">导入旧备忘</button><button id="close-help" class="primary">知道了</button></dialog>
+</body></html>

@@ -1,0 +1,14 @@
+{
+  "name": "wtools-web-launcher",
+  "title": "网页快开",
+  "description": "像启动应用一样打开网页，支持分类、一键打开多个网页和为不同网页选择浏览器。",
+  "version": "1.0.0",
+  "author": "WTools",
+  "main": "index.html",
+  "logo": "logo.svg",
+  "platform": ["win32"],
+  "features": [
+    { "code": "web", "explain": "查找并打开网页或分类", "mainPush": true, "cmds": ["网页快开", "打开网页"] },
+    { "code": "ai", "explain": "打开 AI 网站", "cmds": ["AI 快开"] }
+  ]
+}

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark"><title>Markdown 笔记</title><link rel="stylesheet" href="./vendor/vditor/dist/index.css"><link rel="stylesheet" href="./style.css"><script defer src="./vendor/vditor/dist/index.min.js"></script><script defer src="./vendor/html2canvas.min.js"></script><script defer src="./vendor/jspdf.min.js"></script><script defer src="./index.js"></script></head>
+<body>
+<aside id="sidebar">
+  <header class="brand"><img src="./logo.svg" alt=""><strong>Markdown 笔记</strong><span class="tag">本地</span></header>
+  <div class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="搜索所有笔记" aria-label="搜索所有笔记"><kbd>Ctrl F</kbd></div>
+  <div class="side-actions"><button id="new-note" title="新建笔记 (Ctrl+N)">＋ 新建笔记</button><button id="new-folder" title="新建文件夹" aria-label="新建文件夹">▣＋</button><button id="import" title="导入 Markdown" aria-label="导入 Markdown">↥</button></div>
+  <div class="section-label"><span>我的笔记</span><button id="collapse" title="折叠所有文件夹" aria-label="折叠所有文件夹">⌃</button></div>
+  <nav id="tree" aria-label="笔记与文件夹"></nav>
+  <footer><span id="note-count"></span><button id="theme" title="切换明暗主题" aria-label="切换明暗主题">◐</button><button id="help" title="使用帮助" aria-label="使用帮助">?</button></footer>
+</aside>
+<main>
+  <header class="document-header"><button id="toggle-sidebar" title="切换侧栏" aria-label="切换侧栏">☰</button><input id="title" aria-label="笔记名称" placeholder="未命名笔记"><span id="save-state" role="status">正在加载</span><button id="outline-toggle" title="文档大纲" aria-label="文档大纲">☷</button><button id="more" aria-label="更多操作" title="更多操作">•••</button></header>
+  <div class="modebar"><div class="modes" role="group" aria-label="编辑模式"><button data-mode="wysiwyg">所见即所得</button><button data-mode="ir">即时渲染</button><button data-mode="sv">源码 / 预览</button></div><button id="chart">◇ 插入图表</button><span class="spacer"></span><button id="export">导出 ↗</button></div>
+  <div id="editor"></div><div id="empty" hidden><h2>从一页空白开始</h2><p>新建一条笔记，记录你的想法。</p><button id="empty-create">新建笔记</button></div>
+  <footer class="document-footer"><span id="storage-label">WTools 本地数据库</span><span id="words"></span><span>Markdown</span></footer>
+</main>
+<div id="menu" class="popup" hidden role="menu"></div>
+<dialog id="form-dialog"><form method="dialog"><h2 id="form-heading"></h2><label id="form-label" for="form-value"></label><input id="form-value" autocomplete="off" required maxlength="200"><div class="dialog-actions"><button value="cancel" formnovalidate>取消</button><button value="ok" class="primary">确定</button></div></form></dialog>
+<dialog id="chart-dialog"><h2>把想法变成图表</h2><p class="muted">选择模板，插入后可编辑代码块中的数据。</p><div class="chart-choices"><button data-chart="mermaid"><b>⌘</b>流程图<span>Mermaid</span></button><button data-chart="bar"><b>▥</b>柱状图<span>ECharts</span></button><button data-chart="line"><b>⌁</b>折线图<span>ECharts</span></button><button data-chart="pie"><b>◕</b>饼图<span>ECharts</span></button></div><p class="hint">AI 生成图表需要 WTools 提供通用 AI 接口，当前宿主尚未开放。可将其他 AI 生成的 Mermaid 或 ECharts JSON 粘贴为代码块。</p><form method="dialog"><button>关闭</button></form></dialog>
+<dialog id="help-dialog"><h2>专注记录，自在表达</h2><p>笔记文本保存到 WTools 文档数据库，图片保存到 WTools 附件数据库；资源随包提供，离线可用。</p><dl><dt>Ctrl / Command + F</dt><dd>搜索笔记标题和全文</dd><dt>Ctrl / Command + N</dt><dd>新建笔记</dd><dt>Ctrl / Command + S</dt><dd>立即保存</dd><dt>Ctrl + Alt + /</dt><dd>切换源码与所见即所得</dd><dt>↑ / ↓、Tab / Shift Tab</dt><dd>非输入状态切换笔记，Enter 进入编辑</dd><dt>Tab / Shift Tab</dt><dd>列表缩进与反缩进</dd><dt>Enter / Shift Enter</dt><dd>新段落 / 段内换行</dd></dl><p>拖动笔记可调整顺序，放到文件夹中央可移入；文件夹右击可新建、导出、重命名或删除。拖到列表底部可移回根目录。</p><p>在 WTools 插件详情启用「搜索栏推送」，用「笔记 关键词」搜索并打开笔记。当前宿主未开放独立多窗口、动态全局指令、外部链接启动接口。</p><form method="dialog"><button class="primary">知道了</button></form></dialog>
+<input id="files" type="file" accept=".md,.markdown,.txt" multiple hidden><div id="toast" role="status" hidden></div>
+</body></html>

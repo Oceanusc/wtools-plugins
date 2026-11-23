@@ -1,25 +1,32 @@
 {
   "plugins": [
     {
+      "directory": "wtools-json-editor",
+      "category": "development",
+      "minWtoolsVersion": "0.6.7",
+      "featured": false,
+      "publishedAt": 1795449966830
+    },
+    {
       "directory": "wtools-memo",
       "category": "productivity",
-      "minWtoolsVersion": "0.6.7",
+      "minWtoolsVersion": "0.6.8",
       "featured": true,
-      "publishedAt": 1795417051000
+      "publishedAt": 1795453169629
     },
     {
       "directory": "wtools-hosts",
       "category": "network",
-      "minWtoolsVersion": "0.6.7",
+      "minWtoolsVersion": "0.6.8",
       "featured": false,
-      "publishedAt": 1795417051000
+      "publishedAt": 1795450592380
     },
     {
       "directory": "wtools-todo",
       "category": "productivity",
-      "minWtoolsVersion": "0.6.7",
+      "minWtoolsVersion": "0.6.8",
       "featured": false,
-      "publishedAt": 1795417051000
+      "publishedAt": 1795450213347
     },
     {
       "directory": "wtools-process-killer",
@@ -27,6 +34,20 @@
       "minWtoolsVersion": "0.6.7",
       "featured": false,
       "publishedAt": 1795404691251
+    },
+    {
+      "directory": "wtools-web-launcher",
+      "category": "productivity",
+      "minWtoolsVersion": "0.6.8",
+      "featured": false,
+      "publishedAt": 1795449938611
+    },
+    {
+      "directory": "wtools-markdown",
+      "category": "text",
+      "minWtoolsVersion": "0.6.7",
+      "featured": false,
+      "publishedAt": 1795450448535
     }
   ]
 }

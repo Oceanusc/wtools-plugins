@@ -1,91 +1,422 @@
 <!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ToDo 待办</title>
-  <link rel="stylesheet" href="./style.css">
-  <script src="./index.js" defer></script>
-</head>
-<body>
-  <header>
-    <h1 id="page-title">ToDo 待办</h1>
-    <button type="button" id="sticky" class="main-only" disabled>打开桌面便签</button>
-  </header>
-  <main>
-    <section class="workspace" aria-label="待办">
-      <form id="quick">
-        <fieldset id="quick-fields" disabled>
-          <input id="quick-text" maxlength="1000" placeholder="记一条待办或灵感…" aria-label="待办或灵感">
-          <select id="kind" aria-label="记录类型"><option value="task">待办</option><option value="idea">灵感</option></select>
-          <button class="primary" type="submit">添加</button>
-        </fieldset>
-      </form>
-      <div class="list-toolbar">
-        <div class="tabs" role="group" aria-label="筛选">
-          <button type="button" data-filter="pending" aria-pressed="true">待处理</button>
-          <button type="button" data-filter="idea" aria-pressed="false">灵感</button>
-          <button type="button" data-filter="done" aria-pressed="false">已完成</button>
-          <button type="button" data-filter="all" aria-pressed="false">全部</button>
-        </div>
-        <div class="list-tools main-only">
-          <input type="search" id="search" aria-label="搜索记录" placeholder="搜索记录">
-          <button type="button" id="batch" disabled>批量添加</button>
-          <button type="button" id="summary" disabled>AI 总结</button>
-        </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ToDo 待办</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./index.js" defer></script>
+  </head>
+  <body>
+    <header class="app-header main-only">
+      <div class="app-tab">
+        <span class="app-icon">✓</span>
+        <h1>ToDo 待办</h1>
       </div>
-      <ul id="tasks"></ul>
-      <p id="empty">正在读取待办…</p>
+      <span id="editor-tab" hidden>添加到待办</span>
+      <input
+        type="search"
+        id="search"
+        aria-label="搜索任务"
+        placeholder="搜索任务"
+        autocomplete="off"
+      />
+      <button
+        id="view-toggle"
+        class="icon-button"
+        title="切换为看板视图"
+        aria-label="切换为看板视图"
+      >
+        ▥
+      </button>
+      <button
+        id="menu-toggle"
+        class="icon-button more"
+        title="更多选项"
+        aria-label="更多选项"
+        aria-expanded="false"
+      >
+        ⋮
+      </button>
+      <span class="app-logo" aria-hidden="true">✓</span>
+      <div id="app-menu" class="popup-menu" hidden>
+        <button id="sticky" disabled>打开桌面便签</button>
+        <button id="focus-settings">专注设置</button>
+        <button id="summary" disabled>AI 总结</button>
+      </div>
+    </header>
+    <header class="sticky-header sticky-only">
+      <input id="check-all" type="checkbox" aria-label="完成当前分组全部任务" />
+      <span id="sticky-group"></span>
+      <button id="sticky-add" class="icon-button" aria-label="添加任务">
+        ＋
+      </button>
+      <button id="sticky-close" class="icon-button" aria-label="关闭便签">
+        ×
+      </button>
+    </header>
+    <main>
+      <aside class="sidebar main-only" aria-label="任务分组">
+        <nav id="groups"></nav>
+        <div class="sidebar-footer">
+          <button id="add-group"><span>＋</span> 添加分组</button>
+          <button
+            class="icon-button"
+            id="settings"
+            title="专注设置"
+            aria-label="专注设置"
+          >
+            ⏣
+          </button>
+        </div>
+      </aside>
+      <section class="workspace" aria-label="待办任务">
+        <div class="section-heading main-only">
+          <h2 id="list-title">待处理</h2>
+          <div class="heading-actions">
+            <button
+              id="batch"
+              class="icon-button"
+              title="添加任务"
+              aria-label="添加任务"
+              disabled
+            >
+              ＋
+            </button>
+            <button
+              id="ai-shortcut"
+              class="icon-button ai-icon"
+              title="AI 总结"
+              aria-label="AI 总结"
+            >
+              AI
+            </button>
+            <button
+              id="sticky-shortcut"
+              class="icon-button"
+              title="打开桌面便签"
+              aria-label="打开桌面便签"
+            >
+              ▱
+            </button>
+          </div>
+        </div>
+        <div id="list-scroll">
+          <ul id="tasks"></ul>
+          <p id="empty">正在读取待办…</p>
+        </div>
+      </section>
+      <section
+        id="board"
+        class="board main-only"
+        aria-label="任务看板"
+        hidden
+      ></section>
+      <div class="floating-tools main-only">
+        <button
+          id="board-add"
+          class="float-primary"
+          title="添加任务"
+          aria-label="添加任务"
+        >
+          ＋
+        </button>
+        <button
+          id="board-ai"
+          class="ai-icon"
+          title="AI 总结"
+          aria-label="AI 总结"
+        >
+          AI
+        </button>
+        <button id="board-settings" title="专注设置" aria-label="专注设置">
+          ⏣
+        </button>
+      </div>
+    </main>
+    <div id="feedback">
       <p id="status" role="status"></p>
-      <button type="button" id="retry" hidden>重试</button>
-    </section>
-    <section class="timer" aria-labelledby="timer-title">
-      <h2 id="timer-title">番茄钟</h2>
-      <div class="timer-face">
-        <div class="clock" id="clock" role="timer">25:00</div>
-        <p id="timer-status" role="status">准备专注</p>
+      <button id="retry" hidden>重试</button>
+    </div>
+    <dialog id="edit-dialog" aria-label="添加或编辑任务">
+      <form id="edit-form">
+        <label for="edit-kind">分类</label>
+        <select id="edit-kind"></select>
+        <label for="edit-text">任务内容</label>
+        <textarea
+          id="edit-text"
+          rows="8"
+          required
+          placeholder="输入任务内容，每行一条；长段落之间可用空行分隔"
+        ></textarea>
+        <p id="edit-status" role="status"></p>
+        <div class="edit-footer">
+          <p id="edit-count"></p>
+          <div class="dialog-actions">
+            <button type="button" id="delete" class="danger" hidden>
+              删除
+            </button>
+            <button type="button" data-close="edit-dialog">取消</button>
+            <button type="submit" class="primary">确定</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="group-dialog" aria-labelledby="group-title">
+      <form id="group-form">
+        <h2 id="group-title">添加分组</h2>
+        <label for="group-name">分组名称</label
+        ><input id="group-name" required maxlength="24" autocomplete="off" />
+        <p id="group-status" role="status"></p>
+        <div class="dialog-actions">
+          <button type="button" data-close="group-dialog">取消</button
+          ><button type="submit" class="primary">确定</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="summary-dialog" aria-labelledby="summary-title">
+      <h2 id="summary-title">AI 总结</h2>
+      <p class="helper">使用本机 Ollama 总结当前分组，最多 60 条。</p>
+      <div class="model">
+        <select id="model" aria-label="本地模型"></select
+        ><button id="generate" class="primary" disabled>生成总结</button>
       </div>
-      <fieldset id="timer-controls" disabled>
-        <div class="timer-settings">
-          <label>模式 <select id="phase"><option value="focus">专注</option><option value="break">休息</option></select></label>
-          <label>分钟 <input id="minutes" type="number" min="1" max="180" value="25" required></label>
-        </div>
-        <div class="timer-actions">
-          <button type="button" id="toggle-timer" class="primary">开始</button>
-          <button type="button" id="reset">重置</button>
-        </div>
-      </fieldset>
-    </section>
-  </main>
-  <dialog id="edit-dialog" aria-labelledby="edit-title">
-    <h2 id="edit-title"></h2>
-    <form id="edit-form">
-      <label for="edit-text" id="edit-label">内容</label>
-      <textarea id="edit-text" rows="6" required></textarea>
-      <label id="edit-kind-label" for="edit-kind">类型</label>
-      <select id="edit-kind"><option value="task">待办</option><option value="idea">灵感</option></select>
-      <p role="status" id="edit-status"></p>
+      <label for="summary-text">总结内容</label
+      ><textarea id="summary-text" rows="8"></textarea>
+      <p id="summary-status" role="status"></p>
       <div class="dialog-actions">
-        <button type="button" id="delete" class="danger" hidden>删除</button>
-        <button type="button" data-close="edit-dialog">取消</button>
-        <button type="submit" class="primary">保存</button>
+        <button data-close="summary-dialog">关闭</button
+        ><button id="summary-save" disabled>保存为灵感</button>
       </div>
-    </form>
-  </dialog>
-  <dialog id="summary-dialog" aria-labelledby="summary-title">
-    <h2 id="summary-title">AI 总结</h2>
-    <p>使用本机 Ollama 总结当前列表，最多 60 条。可直接编辑生成结果。</p>
-    <div class="model">
-      <select id="model" aria-label="本地模型"></select>
-      <button type="button" id="generate" class="primary" disabled>生成总结</button>
-    </div>
-    <label for="summary-text">总结内容</label>
-    <textarea id="summary-text" rows="8"></textarea>
-    <p role="status" id="summary-status"></p>
-    <div class="dialog-actions">
-      <button type="button" data-close="summary-dialog">关闭</button>
-      <button type="button" id="summary-save" disabled>保存为灵感</button>
-    </div>
-  </dialog>
-</body>
+    </dialog>
+    <dialog id="settings-dialog" class="drawer" aria-label="专注设置">
+      <button
+        class="drawer-close icon-button"
+        data-close="settings-dialog"
+        aria-label="关闭专注设置"
+      >
+        ×
+      </button>
+      <div class="drawer-body">
+        <div class="settings-card">
+          <label class="duration-label" for="minutes"
+            >专注时长
+            <span
+              ><input
+                id="minutes"
+                type="number"
+                min="1"
+                max="180"
+                value="25"
+                required
+              />
+              分钟</span
+            ></label
+          >
+          <input
+            id="duration"
+            type="range"
+            min="1"
+            max="180"
+            value="25"
+            aria-label="专注时长"
+          />
+          <h2>主题样式</h2>
+          <div class="theme-options">
+            <label class="theme-option">
+              <input type="radio" name="theme" value="tomato" checked />
+              <span class="theme-preview">
+                <svg viewBox="0 0 160 168" aria-hidden="true">
+                  <rect width="160" height="168" rx="13" fill="#cf7966" />
+                  <rect
+                    x="10"
+                    y="10"
+                    width="140"
+                    height="148"
+                    rx="8"
+                    fill="#f0d9cc"
+                  />
+                  <rect
+                    x="17"
+                    y="20"
+                    width="5"
+                    height="5"
+                    rx=".7"
+                    fill="none"
+                    stroke="#777"
+                  />
+                  <text x="27" y="25" fill="#555" font-size="5.5">
+                    专注当下，完成一件小事
+                  </text>
+                  <text
+                    x="80"
+                    y="82"
+                    text-anchor="middle"
+                    fill="#cf7966"
+                    font-family="Segoe UI, sans-serif"
+                    font-size="31"
+                    font-weight="600"
+                  >
+                    25:00
+                  </text>
+                  <path
+                    d="M10 136 Q80 65 150 136 V150 Q150 158 142 158 H18 Q10 158 10 150Z"
+                    fill="#d58a79"
+                  />
+                  <path
+                    d="M80 102 L78 115 M79 109 L88 115"
+                    fill="none"
+                    stroke="#9ebd64"
+                    stroke-width="5"
+                    stroke-linecap="round"
+                  />
+                  <rect
+                    x="30"
+                    y="137"
+                    width="45"
+                    height="13"
+                    rx="6.5"
+                    fill="white"
+                  />
+                  <rect
+                    x="84"
+                    y="137"
+                    width="45"
+                    height="13"
+                    rx="6.5"
+                    fill="white"
+                  />
+                  <text
+                    x="52"
+                    y="146"
+                    text-anchor="middle"
+                    font-size="7"
+                    fill="#cf7966"
+                  >
+                    开始
+                  </text>
+                  <text
+                    x="106"
+                    y="146"
+                    text-anchor="middle"
+                    font-size="7"
+                    fill="#cf7966"
+                  >
+                    重置
+                  </text>
+                </svg>
+              </span>
+              <span class="theme-name">番茄</span>
+            </label>
+            <label class="theme-option">
+              <input type="radio" name="theme" value="digital" />
+              <span class="theme-preview">
+                <svg viewBox="0 0 160 168" aria-hidden="true">
+                  <defs>
+                    <pattern
+                      id="digital-bars"
+                      width="4"
+                      height="30"
+                      patternUnits="userSpaceOnUse"
+                    >
+                      <path d="M1 0V30" stroke="#515c43" stroke-width="1.4" />
+                    </pattern>
+                  </defs>
+                  <rect
+                    x="4"
+                    y="5"
+                    width="152"
+                    height="158"
+                    rx="10"
+                    fill="#30342e"
+                  />
+                  <rect
+                    x="11"
+                    y="12"
+                    width="138"
+                    height="144"
+                    rx="5"
+                    fill="#939d80"
+                  />
+                  <rect
+                    x="18"
+                    y="20"
+                    width="112"
+                    height="35"
+                    rx="4"
+                    stroke="#748060"
+                    fill="none"
+                  />
+                  <rect
+                    x="25"
+                    y="28"
+                    width="5"
+                    height="5"
+                    fill="none"
+                    stroke="#6a7459"
+                  />
+                  <text x="35" y="33" fill="#515c43" font-size="5.5">
+                    专注当下，完成一件小事
+                  </text>
+                  <rect
+                    x="18"
+                    y="88"
+                    width="124"
+                    height="28"
+                    fill="url(#digital-bars)"
+                  />
+                  <text
+                    x="18"
+                    y="145"
+                    fill="#414b35"
+                    font-family="Consolas, monospace"
+                    font-size="28"
+                    font-weight="600"
+                  >
+                    25:00
+                  </text>
+                  <rect
+                    x="124"
+                    y="125"
+                    width="18"
+                    height="20"
+                    rx="4"
+                    fill="#536044"
+                  />
+                  <path
+                    d="M130 131V139 M136 131V139"
+                    stroke="#a5b18f"
+                    stroke-width="1.5"
+                  />
+                </svg>
+              </span>
+              <span class="theme-name">电子表</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <button id="show-timer" class="primary drawer-action">
+        显示桌面番茄钟
+      </button>
+    </dialog>
+    <section id="timer-panel" aria-label="番茄钟" hidden>
+      <div class="timer-top">
+        <button id="timer-settings" class="icon-button" aria-label="专注设置">
+          ⏣</button
+        ><button id="timer-close" class="icon-button" aria-label="关闭番茄钟">
+          ×
+        </button>
+      </div>
+      <div class="timer-inner">
+        <div id="focus-task"></div>
+        <div id="clock" role="timer">25:00</div>
+        <p id="timer-status" role="status">准备开始</p>
+        <div class="tomato-shape"><i></i></div>
+        <fieldset id="timer-controls" disabled>
+          <button id="toggle-timer">开始</button
+          ><button id="reset">重置</button>
+        </fieldset>
+      </div>
+    </section>
+  </body>
 </html>

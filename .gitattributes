@@ -1,1 +1,5 @@
 * text=auto eol=lf
+/plugins/wtools-web-launcher/** text eol=lf
+
+/plugins/wtools-memo/** text eol=lf
+/plugins/wtools-hosts/** text eol=lf

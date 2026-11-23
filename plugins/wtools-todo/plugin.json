@@ -1,12 +1,21 @@
 {
   "name": "wtools-todo",
   "title": "ToDo 待办",
-  "description": "记录待办与灵感，使用桌面便签、番茄钟和本地 AI 总结。",
-  "version": "1.0.1",
+  "description": "分组管理待办与灵感，支持列表和看板、桌面便签、双主题番茄钟及本地 AI 总结。",
+  "version": "1.1.0",
   "author": "WTools",
   "main": "index.html",
-  "platform": ["win32"],
+  "platform": [
+    "win32"
+  ],
   "features": [
-    { "code": "todo", "cmds": ["ToDo", "待办", "番茄钟"] }
+    {
+      "code": "todo",
+      "cmds": [
+        "ToDo",
+        "待办",
+        "番茄钟"
+      ]
+    }
   ]
 }

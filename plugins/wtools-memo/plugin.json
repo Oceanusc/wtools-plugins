@@ -1,15 +1,41 @@
 {
   "name": "wtools-memo",
-  "title": "备忘录",
-  "description": "记录备忘，并在指定时间收到桌面提醒。",
-  "version": "1.0.1",
+  "title": "备忘快贴",
+  "description": "快速收藏常用「文本」「代码」「图片」，Enter、向右键或双击快速粘贴。文本与图片均保存在 WTools 本地存储。",
+  "version": "1.1.1",
   "author": "WTools",
   "main": "index.html",
-  "platform": ["win32"],
+  "platform": [
+    "win32"
+  ],
   "features": [
     {
       "code": "memo",
-      "cmds": ["备忘录", "桌面提醒"]
+      "cmds": [
+        "备忘录",
+        "备忘快贴",
+        "桌面提醒"
+      ]
+    },
+    {
+      "code": "collect-text",
+      "cmds": [
+        {
+          "type": "over",
+          "label": "收藏文本到备忘快贴",
+          "minLength": 1,
+          "maxLength": 64000
+        }
+      ]
+    },
+    {
+      "code": "collect-image",
+      "cmds": [
+        {
+          "type": "img",
+          "label": "收藏图片到备忘快贴"
+        }
+      ]
     }
   ]
 }

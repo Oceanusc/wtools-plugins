@@ -1,8 +1,8 @@
 {
   "name": "wtools-hosts",
   "title": "hosts 切换",
-  "description": "查看本机 Windows hosts 文件，管理方案并预览合并结果。",
-  "version": "1.0.1",
+  "description": "公共配置与多套 hosts 方案合并切换，支持快捷应用、深浅主题及 Vim 编辑。",
+  "version": "1.1.0",
   "author": "WTools",
   "main": "index.html",
   "platform": ["win32"],
