@@ -149,3 +149,39 @@ pre { max-height: 128px; overflow: auto; margin: 0; padding: 8px; border-radius:
 .confirm p { margin-bottom: 6px; }
 .danger, .danger-outline { color: var(--danger); }
 .danger { border-color: var(--danger); }
+
+html, body { width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden; }
+.list { min-width: 0; min-height: 0; }
+.heading, .toolbar, .search { min-width: 0; }
+.heading > div { min-width: 0; }
+.heading p, .footer span { overflow-wrap: anywhere; }
+dialog { overflow: auto; }
+@media (max-width: 650px) {
+  :root { font-size: 12px; }
+  .header, .filters, .footer { gap: 6px 10px; padding-inline: 12px; }
+  .header { padding-block: 9px; }
+  .heading { gap: 7px; }
+  .heading img { width: 28px; height: 28px; }
+  h1 { font-size: 17px; }
+  .heading p { font-size: 10px; }
+  .toolbar { gap: 6px; }
+  .toggle { font-size: 11px; }
+  .search { flex: 1 1 150px; }
+  table { min-width: 0; }
+  .cpu { display: none; }
+  th:nth-child(2) { width: 54px; }
+  th:nth-child(3) { width: 22%; }
+  th:nth-child(4) { width: 68px; }
+  th:last-child { width: 58px; }
+  th, td { padding: 6px 5px; }
+  th:first-child, td:first-child { padding-left: 12px; }
+  th:last-child, td:last-child { padding-right: 8px; }
+  .row-button { padding-inline: 5px; }
+  .number { font-size: 11px; }
+}
+@media (max-height: 430px) {
+  .header { padding-block: 7px; }
+  .heading p { margin-top: 2px; }
+  .filters { padding-bottom: 6px; }
+  .footer { min-height: 26px; }
+}

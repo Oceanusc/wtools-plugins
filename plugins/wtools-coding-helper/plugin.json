@@ -1,0 +1,55 @@
+{
+  "name": "wtools-coding-helper",
+  "title": "编码小助手",
+  "description": "离线时间转换、Base64 与图片编解码、URL、六种文本/文件哈希、Unicode、UUID、进制转换和 HTML 转义，支持启动器输入识别。",
+  "version": "1.0.0",
+  "author": "WTools",
+  "main": "index.html",
+  "logo": "logo.svg",
+  "platform": ["win32"],
+  "features": [
+    {
+      "code": "base64",
+      "explain": "字符串 Base64 编码与解码",
+      "mainPush": true,
+      "cmds": ["编码小助手", "Base64", "Base64 编码", "Base64 解码", { "type": "regex", "label": "Base64 解码", "match": "^[A-Za-z0-9+/\\r\\n]+={0,2}$", "minLength": 4, "maxLength": 65536 }]
+    },
+    {
+      "code": "image",
+      "explain": "图片 Base64 编码、解码与保存",
+      "cmds": ["图片 Base64", "图片 Base64 编码", "图片 Base64 解码", { "type": "img", "label": "图片 Base64 编码" }, { "type": "regex", "label": "图片 Base64 解码", "match": "^data:image/[A-Za-z0-9.+-]+;base64,", "maxLength": 65536 }]
+    },
+    {
+      "code": "date",
+      "explain": "时间戳与标准时间转换",
+      "mainPush": true,
+      "cmds": ["时间转换", "时间戳", "date", "unixtime", "timestamp", "标准时间", { "type": "regex", "label": "时间戳转换", "match": "^-?(?:[0-9]{10}|[0-9]{13})$", "minLength": 10, "maxLength": 14 }, { "type": "regex", "label": "标准时间转换", "match": "^[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,3})?(?:[Zz]|[+-][0-9]{2}:[0-9]{2})?$", "maxLength": 40 }]
+    },
+    { "code": "uuid", "explain": "生成 UUID v4 / GUID 唯一标识", "cmds": ["UUID", "GUID", "唯一ID"] },
+    { "code": "hash", "explain": "文本与文件哈希摘要", "cmds": ["Hash", "哈希加密", "文件哈希", "MD5", "SHA1", "SHA224", "SHA256", "SHA384", "SHA512"] },
+    {
+      "code": "url",
+      "explain": "URL 参数与完整 URL 编解码",
+      "mainPush": true,
+      "cmds": ["URL", "URL 编码", "URL 解码", { "type": "regex", "label": "URL 解码", "match": "%[0-9a-fA-F]{2}", "maxLength": 65536 }]
+    },
+    {
+      "code": "radix",
+      "explain": "2–36 进制整数转换",
+      "mainPush": true,
+      "cmds": ["进制转换", "十六进制", { "type": "regex", "label": "十六进制转换", "match": "^[+-]?0[xX][0-9a-fA-F]+$", "maxLength": 10000 }]
+    },
+    {
+      "code": "unicode",
+      "explain": "Unicode 码位、UTF-16、UTF-8 与数字实体编解码",
+      "mainPush": true,
+      "cmds": ["Unicode", "UTF16", "UTF8", "Unicode 码位", { "type": "regex", "label": "Unicode 解码", "match": "\\\\u(?:[0-9a-fA-F]{4}|\\{[0-9a-fA-F]{1,6}\\})|\\\\x[0-9a-fA-F]{2}|U\\+[0-9a-fA-F]{1,6}", "maxLength": 65536 }]
+    },
+    {
+      "code": "html",
+      "explain": "HTML 特殊字符转义与实体解码",
+      "mainPush": true,
+      "cmds": ["HTML 转义", "HTML 实体", "HTML 解码", { "type": "regex", "label": "HTML 实体解码", "match": "&(?:#[0-9]+|#[xX][0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]+);", "maxLength": 65536 }]
+    }
+  ]
+}

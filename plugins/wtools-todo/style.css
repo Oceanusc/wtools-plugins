@@ -1100,3 +1100,41 @@ body.digital #timer-status {
     margin-bottom: 10px;
   }
 }
+
+/* Keep group navigation and task content within the available height. */
+.sidebar, .workspace, .board, .board-column { min-height: 0; }
+.group-name, .section-heading h2 { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.group-name { flex: 1; }
+.group-count, .heading-actions { flex-shrink: 0; }
+.section-heading { gap: 8px; }
+dialog { overflow: auto; }
+@media (max-width: 800px) {
+  :root { --sidebar-width: 160px; }
+  .workspace { padding-inline: 14px; }
+  .section-heading { height: 48px; }
+  .heading-actions { gap: 4px; }
+  .board-column { width: clamp(240px, 44vw, 350px); min-width: min(240px, 100vw); }
+  .board-column .section-heading { height: 48px; }
+  .column-name { font-size: 16px; gap: 6px; min-width: 0; }
+}
+@media (max-width: 540px) {
+  :root { --sidebar-width: 122px; }
+  .workspace { padding-inline: 9px; }
+  .group-button { gap: 5px; padding-inline: 5px; font-size: 12px; }
+  .sidebar-footer { padding-inline: 5px; gap: 4px; }
+  .sidebar-footer #add-group { font-size: 11px; gap: 4px; }
+  .section-heading h2 { font-size: 15px; }
+  .task { gap: 7px; padding-inline: 8px; }
+  .dialog-actions { flex-wrap: wrap; }
+}
+@media (max-height: 430px) {
+  :root { --header-height: 38px; }
+  .app-header { min-height: 38px; height: 38px; }
+  .section-heading, .board-column .section-heading { height: 38px; }
+  .sidebar-footer { padding-block: 6px; }
+  .task { min-height: 42px; padding-block: 6px; }
+  dialog:not(.drawer) { padding: 14px 18px; }
+  dialog select { height: 36px; margin-bottom: 10px; }
+  dialog textarea { min-height: 80px; padding: 10px; }
+  .edit-footer { margin-top: 10px; }
+}

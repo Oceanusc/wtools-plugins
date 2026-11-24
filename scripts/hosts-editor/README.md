@@ -1,6 +1,6 @@
 # hosts 切换编辑器
 
-生产插件在 `plugins/wtools-hosts/`。使用现有 WTools `/_atools/hosts` 接口，不增加原生命令；保留原有 `{ public, profiles }` 存储格式。公共配置首次由宿主从系统导入，保存不写系统，应用时由宿主检查预览指纹再写入。
+生产插件在 `plugins/wtools-hosts/`。使用现有 WTools `/_wtools/hosts` 接口，不增加原生命令；保留原有 `{ public, profiles }` 存储格式。公共配置首次由宿主从系统导入，保存不写系统，应用时由宿主检查预览指纹再写入。
 
 ## 构建与检查
 

@@ -1,5 +1,15 @@
 # WTools 插件仓库
 
+## 插件视图适配约定
+
+插件界面按 WTools 默认 760×570、最小 410×300 逻辑像素设计，分别处理窄窗和矮窗。根容器占满实际视口，编辑器与列表设置可收缩的边界，必要滚动留在内容区；不要用固定最小宽高、整体缩放或隐藏正文来掩盖溢出。Windows DPI 由 WebView2 换算，不对页面整体再次乘除缩放比例。
+
+极矮窗口中，编码小助手通过「选项」展开转换设置，为输入和结果保留可编辑空间；月历仅显示公历日期，所选日的农历仍在详情区。JSON 筛选使用随包提供的 JavaScript 解释器，不依赖宿主放开 `eval`；执行环境就绪后超时 2 秒中断。
+
+当前备忘、hosts、待办、进程、网页快开和日历要求 WTools 0.6.9，市场清单会阻止旧宿主安装这些新版包。
+
+本次为全部 11 个插件补充了布局适配；Markdown 在窄窗中使用可关闭侧栏。原生接口插件的变更包须配套包含当前包指纹的宿主构建。插件统一调用 `window.wtools` 与 `/_wtools/`，宿主不再替换旧版 preload、注入旧全局别名或接受旧路由；JSON 编辑器与 ToDo 使用仓库内的 WTools 实现，合社日历改用通用请求且无需包指纹。指南见 [WTools 插件 AI 开发指南](https://github.com/Oceanusc/wtools/blob/main/docs/wtools-plugin-ai-guide.md)。包含窗口尺寸支持的宿主构建还可读取 `pluginSetting` 的初始与最小宽高；页面仍须适应实际视口。
+
 此仓库维护可在 WTools 插件市场安装的 Web 插件。GitHub Actions 从登记的目录生成 ZIP、SHA-256 和目录索引，GitHub Pages 提供可直接下载的 HTTPS 文件。
 
 ## 上架或更新插件
@@ -25,7 +35,13 @@
 
 示例条目对应 `plugins/night-guard/`。当前收录备忘录、hosts 切换、ToDo 待办、进程与端口管理和 JSON 编辑器。前四项工具使用 WTools 的专用原生接口。改动这些插件的包内容时，需要在 WTools 宿主中登记新内容的指纹，并在上架清单注明所需的最低宿主版本。JSON 编辑器离线运行，无需原生接口；构建和验证说明见 `scripts/json-editor/README.md`。七种分类为 `text`、`productivity`、`system`、`network`、`development`、`media` 和 `other`。
 
-网页快开支持分类批量启动、为每个网址指定浏览器和启动器搜索，需要包含对应原生接口及包指纹的 WTools 0.6.8 或更新版本。说明见 [网页快开](plugins/wtools-web-launcher/README.md)。
+网页快开支持分类批量启动、为每个网址指定浏览器和启动器搜索，当前插件包需要 WTools 0.6.9 或更新版本。说明见 [网页快开](plugins/wtools-web-launcher/README.md)。
+
+编码小助手提供离线 Base64（含图片）、时间戳、UUID、文本/文件 Hash、URL、2–36 进制、Unicode 与 HTML 转义，支持启动器正则识别和搜索栏推送。无需构建或专用原生接口，最低 WTools 0.6.7；使用与依赖说明见 [编码小助手](plugins/wtools-coding-helper/README.md)。
+
+时间戳转换支持秒/毫秒与日期双向转换、全球时区、结果复制和可暂停的当前时间戳，提供可选时区与明暗主题设置。离线运行，无需构建或专用原生接口，说明见 [时间戳转换](plugins/wtools-timestamp/README.md)。
+
+合社日历基于开源 he-calendar 1.6.0 适配，提供农历、黄历、节日、二十四节气与中国风主题，支持搜索「合社日历」「日历」「万年历」「黄历」「calendar」。插件支持城市搜索、多城市实时天气及预报，并支持在系统默认浏览器打开外链。当前工作区已迁移通用 `wtools.request` 获取天气，需配套包含通用联网能力和外链接口的 WTools 构建，不再需要日历专用接口或包指纹；早期 0.6.8 不支持通用请求。日历离线可用，天气需要联网。使用方式和资源来源见 [合社日历](plugins/wtools-he-calendar/README.md)。
 
 ## 首次部署
 
@@ -52,5 +68,9 @@ hosts 切换 1.1.0 提供常驻方案侧栏、单选／多选合并、右键管�
 ## Markdown 笔记
 
 新增独立的离线 Markdown 笔记插件，提供三种编辑模式、全文搜索、文件夹、公式与图表以及 Markdown / HTML / PDF / PNG 导出。文本和图片分别使用 WTools 文档数据库与附件数据库。启动器通过「笔记 关键词」搜索栏推送快速打开。安装、构建、验证和宿主能力限制见 [插件说明](plugins/wtools-markdown/README.md)。
+
+## PDF 处理
+
+新增独立的本地 PDF 工具，支持压缩、合并、拆分、水印、提取图片、转图片和 Word / PPT / Excel 导出。界面包含文件预览、合并排序与页面排除、批量处理和 ZIP 下载。全部依赖随包提供，不上传文件。Word 支持文字提取与图片两种模式，PPT 按页生成图片幻灯片，Excel 按文字位置分列，不含 OCR。使用限制与依赖维护见 [PDF 插件说明](plugins/wtools-pdf/README.md)。
 
 备忘快贴 1.1.1 针对宿主默认窗口及 Windows 150% 缩放提供紧凑布局；收藏不足三条时显示可关闭的使用引导，可直接新建或导入旧备忘。升级保留已有收藏、标签和提醒，不自动添加演示数据。

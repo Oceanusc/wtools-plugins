@@ -116,12 +116,12 @@ async function setImage(file) {
   } finally { bitmap.close(); }
 }
 async function native(payload) {
-  const response = await fetch("/_atools/memo-transfer",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+  const response = await fetch("/_wtools/memo-transfer",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
   const result = await response.json().catch(() => null);
   if (!response.ok) throw new Error(result?.error || "当前 WTools 尚不支持快捷粘贴，请更新配套宿主。"); return result;
 }
 async function legacy(payload) {
-  const response = await fetch("/_atools/memos",{method:"POST",body:JSON.stringify(payload)}); const result = await response.json().catch(() => null);
+  const response = await fetch("/_wtools/memos",{method:"POST",body:JSON.stringify(payload)}); const result = await response.json().catch(() => null);
   if (!response.ok) throw new Error(result?.error || "无法访问旧版备忘，请更新配套宿主。"); return result;
 }
 async function transfer(op) {

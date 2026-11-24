@@ -2,7 +2,7 @@
   "name": "wtools-todo",
   "title": "ToDo 待办",
   "description": "分组管理待办与灵感，支持列表和看板、桌面便签、双主题番茄钟及本地 AI 总结。",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "WTools",
   "main": "index.html",
   "platform": [

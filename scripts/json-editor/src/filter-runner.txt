@@ -1,33 +1,10 @@
 // This document is always loaded in an opaque-origin sandbox without host APIs.
-function workerMain() {
-const send = self.postMessage.bind(self);
-const stringify = JSON.stringify;
-const Fn = Function;
-addEventListener('message', event => {
-  const { expression, data } = event.data;
-  try {
-    let evaluate;
-    try { evaluate = new Fn('data', '"use strict"; return (\n' + expression + '\n);'); }
-    catch { evaluate = new Fn('data', '"use strict";\n' + expression); }
-    const value = evaluate.call(data, data);
-    if (value && typeof value.then === 'function') {
-      Promise.resolve(value).catch(() => {});
-      throw new Error('过滤仅支持同步表达式，不能返回 Promise');
-    }
-    const json = stringify(value, (_, value) => {
-      if (typeof value === 'undefined' || typeof value === 'function' || typeof value === 'symbol' || (typeof value === 'number' && !Number.isFinite(value))) throw new Error('结果包含无法表示为 JSON 的值');
-      return value;
-    });
-    if (json === undefined) throw new Error('表达式没有返回 JSON 值，请使用表达式或 return 返回结果');
-    if (json.length > 10 * 1024 * 1024) throw new Error('过滤结果超过 10 MB，请缩小结果范围');
-    send({ ok: true, json });
-  } catch (error) { send({ ok: false, error: String(error.message || error) }); }
-});
-}
-const url = URL.createObjectURL(new Blob(['(' + workerMain.toString() + ')()'], { type: 'text/javascript' }));
+const url = URL.createObjectURL(new Blob([__WTOOLS_FILTER_WORKER__], { type: 'text/javascript' }));
 const worker = new Worker(url);
 URL.revokeObjectURL(url);
-worker.onmessage = event => { worker.terminate(); parent.postMessage(event.data, '*'); };
+worker.onmessage = event => {
+  if (!event.data?.ready) worker.terminate();
+  parent.postMessage(event.data, '*');
+};
 worker.onerror = () => { worker.terminate(); parent.postMessage({ ok: false, error: '过滤执行失败' }, '*'); };
 addEventListener('message', event => { if (event.source === parent) worker.postMessage(event.data); });
-parent.postMessage({ ready: true }, '*');

@@ -15,10 +15,21 @@ assert.match(generated, /title\?: string/);
 const source = ts.createSourceFile('result.ts', generated, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
 assert.equal(source.parseDiagnostics.length, 0, generated);
 const root = path.resolve(here, '../../plugins/wtools-json-editor');
+// Optional integration check against the actual host policy, rather than only
+// the plugin's own HTML meta policy. Keep failures visible in host QA.
+let hostCsp;
+if (process.env.WTOOLS_HOST_CSP === '1') {
+  const runtime = await readFile(path.join(process.env.WTOOLS_SOURCE || 'D:/WTools', 'src-tauri/src/plugins/runtime.rs'), 'utf8');
+  const match = runtime.match(/const CSP: &str =\s*"([\s\S]*?)";/);
+  assert.ok(match, 'Cannot read the WTools host CSP');
+  hostCsp = match[1].replace(/\\\r?\n\s*/g, '');
+}
 const server = createServer(async (req,res) => {
   try { const name = req.url === '/' ? 'index.html' : req.url.slice(1); if (!/^[\w.-]+$/.test(name)) throw Error();
     const data = await readFile(path.join(root, name));
-    res.setHeader('Content-Type', name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'); res.end(data);
+    res.setHeader('Content-Type', name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html');
+    if (hostCsp) res.setHeader('Content-Security-Policy', hostCsp);
+    res.end(data);
   } catch { res.statusCode = 404; res.end(); }
 });
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -36,7 +47,8 @@ try {
   assert.equal(JSON.parse(await result()).project, 'WTools');
   assert.equal((await result()).split('\n').length,1);
   await page.locator('#expression').fill('this.items.filter(x => x.active).map(x => x.name)');
-  await page.locator('#run').click(); await page.waitForFunction(()=>document.querySelector('#run-status').textContent.includes('运行成功'));
+  await page.locator('#run').click(); await page.waitForFunction(()=>!document.querySelector('#run').disabled);
+  assert.match(await page.locator('#run-status').innerText(), /运行成功/);
   assert.deepEqual(JSON.parse(await result()),['JSON 格式化','数据转换']);
   await page.locator('#expression').fill('while (true) {}'); await page.locator('#run').click();
   await page.waitForFunction(()=>document.querySelector('#run-status').textContent.includes('已中断'));
@@ -45,10 +57,24 @@ try {
   assert.equal(JSON.parse(await result()),3);
   await page.locator('#expression').fill('fetch("https://example.com")'); await page.locator('#run').click();
   await page.waitForFunction(()=>!document.querySelector('#run').disabled);
+  assert.match(await page.locator('#run-status').innerText(), /fetch is not defined/);
+  await page.locator('#expression').fill('Promise.resolve(1)'); await page.locator('#run').click();
+  await page.waitForFunction(()=>!document.querySelector('#run').disabled);
   assert.match(await page.locator('#run-status').innerText(), /不能返回 Promise/);
   await page.locator('#expression').fill('typeof parent + ":" + typeof document'); await page.locator('#run').click();
   await page.waitForFunction(()=>document.querySelector('#run-status').textContent.includes('运行成功'));
   assert.equal(JSON.parse(await result()), 'undefined:undefined');
+  for (const [expression, expected] of [
+    ['return data.items.reduce((sum, item) => sum + item.id, 0)', 6],
+    ['data.items.map(({id, ...rest}) => ({...rest, id: id * 2}))[0].id', 2],
+    ['data.items?.filter(item => item.active).length ?? 0', 2],
+    ['typeof wtools + ":" + typeof localStorage + ":" + typeof fetch', 'undefined:undefined:undefined'],
+  ]) {
+    await page.locator('#expression').fill(expression); await page.locator('#run').click();
+    await page.waitForFunction(()=>!document.querySelector('#run').disabled);
+    assert.match(await page.locator('#run-status').innerText(), /运行成功/);
+    assert.deepEqual(JSON.parse(await result()), expected);
+  }
   await input('<root version="1"><item>A &amp; B</item><item>中文</item></root>'); await page.locator('#format').click();
   assert.deepEqual(JSON.parse(await result()), { root:{'@version':'1', item:['A & B','中文']} });
   await page.locator('[data-action="xml"]').click(); assert.match(await result(), /A &amp; B/);

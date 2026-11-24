@@ -265,7 +265,12 @@ async function setTheme(next){try{api.dbStorage.setItem('markdown-theme',next);t
 function bind() {
   $('title').oninput=markDirty;$('search').oninput=renderTree;
   $('new-note').onclick=()=>create('note');$('empty-create').onclick=()=>create('note');$('new-folder').onclick=()=>create('folder');
-  $('toggle-sidebar').onclick=()=>document.body.classList.toggle('sidebar-hidden');
+  const narrowSidebar=matchMedia('(max-width: 580px)');
+  const setSidebar=hidden=>{document.body.classList.toggle('sidebar-hidden',hidden);$('toggle-sidebar').setAttribute('aria-expanded',String(!hidden));};
+  setSidebar(narrowSidebar.matches);
+  narrowSidebar.addEventListener('change',event=>setSidebar(event.matches));
+  $('toggle-sidebar').onclick=()=>setSidebar(!document.body.classList.contains('sidebar-hidden'));
+  $('close-sidebar').onclick=()=>{setSidebar(true);$('toggle-sidebar').focus();};
   $('collapse').onclick=()=>{expanded.clear();renderTree();};$('help').onclick=()=>$('help-dialog').showModal();
   $('theme').onclick=()=>setTheme(theme==='dark'?'light':'dark');
   $('outline-toggle').onclick=()=>$('editor').querySelector('[data-type="outline"]')?.click();
@@ -284,13 +289,13 @@ function bind() {
   document.addEventListener('pointerdown',e=>{if(!$('menu').contains(e.target)&&!e.target.closest('#more,#export'))$('menu').hidden=true;});
   document.addEventListener('keydown',e=>{
     const mod=e.ctrlKey||e.metaKey;
-    if(e.key==='Escape'){$('menu').hidden=true;return;}
+    if(e.key==='Escape'){$('menu').hidden=true;if(narrowSidebar.matches&&!document.querySelector('dialog[open]'))setSidebar(true);return;}
     if(!$('menu').hidden&&['ArrowUp','ArrowDown','Home','End'].includes(e.key)){
       e.preventDefault();const buttons=[...$('menu').querySelectorAll('button')],i=buttons.indexOf(document.activeElement);
       buttons[e.key==='Home'?0:e.key==='End'?buttons.length-1:(i+(e.key==='ArrowUp'?-1:1)+buttons.length)%buttons.length]?.focus();return;
     }
     if(document.querySelector('dialog[open]'))return;
-    if(mod&&e.key.toLowerCase()==='f'){e.preventDefault();$('search').focus();$('search').select();}
+    if(mod&&e.key.toLowerCase()==='f'){e.preventDefault();setSidebar(false);$('search').focus();$('search').select();}
     else if(mod&&e.key.toLowerCase()==='s'){e.preventDefault();save();}
     else if(mod&&e.key.toLowerCase()==='n'){e.preventDefault();create('note');}
     else if(e.ctrlKey&&e.altKey&&e.code==='Slash'){e.preventDefault();setMode(mode==='sv'?'wysiwyg':'sv');}

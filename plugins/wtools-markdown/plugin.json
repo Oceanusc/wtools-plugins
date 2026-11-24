@@ -2,7 +2,7 @@
   "name": "wtools-markdown",
   "title": "Markdown 笔记",
   "description": "离线 Markdown 笔记，支持所见即所得、实时预览、公式图表、全文搜索与多格式导出。",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "WTools",
   "main": "index.html",
   "logo": "logo.svg",

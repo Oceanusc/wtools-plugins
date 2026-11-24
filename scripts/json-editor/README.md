@@ -16,6 +16,8 @@ python scripts/build_catalog.py
 
 URL 参数保留字符串，重复键生成数组。XML 保留根节点，属性映射为 `@属性`，文本映射为 `#text`，重复元素生成数组；XML 标量保留为字符串，混合内容顺序不保留。JSON 转 XML 使用单个根键，否则包裹 `root`；数组元素使用 `item`，空数组及 null 为无内容元素，非法 XML 键名报错。YAML 使用 YAML 1.2，生成 JSON 时不保留注释和锚点。数字采用 JavaScript Number 精度，超出安全整数的 ID 请用字符串输入。
 
-TypeScript 根据全部数组样本合并属性并推断联合类型、可选字段；空数组使用 `unknown`。过滤支持 `this` / `data` 表达式，或带 `return` 的语句。代码仅在无宿主权限的 sandbox iframe 内的 Worker 中执行，网络由 CSP 禁止，超时 2 秒销毁执行环境；结果上限 10 MB，文件导入上限 20 MB。过滤结果必须可序列化为 JSON。
+TypeScript 根据全部数组样本合并属性并推断联合类型、可选字段；空数组使用 `unknown`。过滤支持 `this` / `data` 表达式，或带 `return` 的语句。使用随包构建的 Sval 解释执行 JavaScript，不使用原生 `eval` / `Function`，因此不需要放宽宿主 CSP。代码仅在无宿主权限的 sandbox iframe 内的 Worker 中运行，解释器不提供网络或宿主 API，CSP 同时禁止网络。Worker 就绪后开始计算 2 秒执行时限，超时销毁执行环境；独立启动时限 10 秒。结果上限 10 MB，文件导入上限 20 MB。过滤只接受同步、可序列化为 JSON 的返回值。
 
 `test.mjs` 覆盖真实浏览器内的转换、粘贴、导出、执行超时与后续恢复，并验证 HTTP 和本地文件打开方式。运行前需安装 Playwright Chromium。
+
+验证实际宿主的脚本限制时，设置 `$env:WTOOLS_HOST_CSP='1'` 后运行相同测试；`WTOOLS_SOURCE` 可指定宿主仓库目录（默认 `D:/WTools`）。测试直接读取宿主源码中的 CSP，不能以普通浏览器模式通过替代这项检查。

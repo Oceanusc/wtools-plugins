@@ -2,7 +2,7 @@
   "name": "wtools-memo",
   "title": "备忘快贴",
   "description": "快速收藏常用「文本」「代码」「图片」，Enter、向右键或双击快速粘贴。文本与图片均保存在 WTools 本地存储。",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "author": "WTools",
   "main": "index.html",
   "platform": [

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; font-src 'self' blob: data:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>PDF 处理</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="vendor/pdf-lib.min.js" defer></script>
+  <script src="vendor/jszip.min.js" defer></script>
+  <script src="index.js" type="module"></script>
+</head>
+<body>
+  <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-compress" viewBox="0 0 24 24"><path d="M3 10h18M3 14h18M12 2v5m-3-3 3 3 3-3M12 22v-5m-3 3 3-3 3 3"/></symbol>
+    <symbol id="i-merge" viewBox="0 0 24 24"><rect x="3" y="3" width="12" height="12" rx="2"/><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M15 12v6m-3-3h6"/></symbol>
+    <symbol id="i-split" viewBox="0 0 24 24"><path d="M12 2v20M7 7H3v10h4M17 7h4v10h-4"/></symbol>
+    <symbol id="i-watermark" viewBox="0 0 24 24"><path d="M4 18h16v4H4Zm3-3h10l-2-4V6a3 3 0 0 0-6 0v5Z"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/></symbol>
+    <symbol id="i-extract" viewBox="0 0 24 24"><path d="M12 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7M3 17l5-5 4 4 3-4M16 3h5v5m-7 2 7-7"/><circle cx="8" cy="8" r="1"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8m-4-4h8"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6m-11-9V7m-3 3h6"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="m9 3-1 3-3 1-2 5 2 5 3 1 1 3h6l1-3 3-1 2-5-2-5-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6Z"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M20 10a8 8 0 1 0-1 8M20 3v7h-7"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 20V4m-6 6 6-6 6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v16m-6-6 6 6 6-6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+  </svg>
+  <header class="header">
+    <div class="brand"><img src="logo.svg" width="34" height="34" alt=""><h1>PDF 处理</h1><span class="brand-divider"></span><span class="brand-subtitle">让文档，轻一点。</span></div>
+    <span class="local-badge"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>离线 · 本地处理</span>
+  </header>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <nav aria-label="PDF 工具">
+        <p class="nav-heading">PDF 操作<span></span></p>
+        <button class="nav-item active" data-mode="compress" aria-current="page"><span class="nav-icon coral"><svg class="icon"><use href="#i-compress"/></svg></span>PDF 压缩</button>
+        <button class="nav-item" data-mode="merge"><span class="nav-icon purple"><svg class="icon"><use href="#i-merge"/></svg></span>PDF 合并</button>
+        <button class="nav-item" data-mode="split"><span class="nav-icon purple"><svg class="icon"><use href="#i-split"/></svg></span>PDF 拆分</button>
+        <button class="nav-item" data-mode="watermark"><span class="nav-icon coral"><svg class="icon"><use href="#i-watermark"/></svg></span>PDF 水印</button>
+        <button class="nav-item" data-mode="extract"><span class="nav-icon gold"><svg class="icon"><use href="#i-extract"/></svg></span>提取图片</button>
+        <button class="nav-item" data-mode="images"><span class="nav-icon gold"><svg class="icon"><use href="#i-image"/></svg></span>PDF 转图片</button>
+        <p class="nav-heading conversion-heading">PDF 格式转换<span></span></p>
+        <button class="nav-item" data-mode="word"><span class="office-icon word">W</span>PDF 转 Word</button>
+        <button class="nav-item" data-mode="ppt"><span class="office-icon ppt">P</span>PDF 转 PPT</button>
+        <button class="nav-item" data-mode="excel"><span class="office-icon excel">X</span>PDF 转 Excel</button>
+      </nav>
+      <div class="sidebar-bottom"><button id="settings-open" class="settings-button"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg>设置与说明</button><span class="version">PDF 工具箱 / 1.0</span></div>
+    </aside>
+    <main class="workspace" id="workspace">
+      <div class="workspace-heading"><div><h2 id="tool-title">PDF 压缩</h2><p id="tool-description">减小文件体积，让传输和分享更轻松。</p></div><span class="tool-index" id="tool-index">01 / 09</span></div>
+      <div class="work-body" id="work-body">
+        <section class="options" id="options" aria-label="处理参数">
+          <div data-options="compress">
+            <div class="segmented" role="group" aria-label="压缩模式"><button data-compression="basic" aria-pressed="true">基本压缩</button><button data-compression="strong" aria-pressed="false">强压缩</button></div>
+            <p class="option-hint" id="compression-hint">优化 PDF 内部结构，保留文字和矢量内容；体积变化取决于源文件。</p>
+            <div id="strong-options" class="inline-options" hidden><label>分辨率<select id="compress-dpi"><option value="96">96 DPI · 较小</option><option value="120" selected>120 DPI · 均衡</option><option value="150">150 DPI · 清晰</option></select></label><label>图片质量<input id="compress-quality" type="number" min="20" max="95" value="65"><span class="input-unit">%</span></label></div>
+          </div>
+          <div data-options="merge" hidden><div class="inline-options"><label class="wide-field">输出名称<input id="merge-name" type="text" value="合并文档" maxlength="90" autocomplete="off"></label><label class="checkbox-label"><input id="show-pages" type="checkbox">显示所有页面</label></div><p class="option-hint">支持 PDF / JPG / PNG / WebP。拖动文件调整顺序，也可使用上移、下移；点页面角标可排除或恢复页面。</p></div>
+          <div data-options="split" hidden><div class="inline-options"><label>拆分方式<select id="split-mode"><option value="each">每页一个 PDF</option><option value="count">按固定页数拆分</option><option value="range">将所选页提取为一个 PDF</option></select></label><label id="chunk-field" hidden>每份页数<input id="split-chunk" type="number" value="2" min="1" max="500"></label></div></div>
+          <div data-options="watermark" hidden>
+            <h3 class="options-title">水印设置</h3>
+            <label>水印文本<input id="watermark-text" type="text" value="WTools" maxlength="80" autocomplete="off"></label>
+            <div class="inline-options"><label>字体大小<input id="watermark-size" type="number" min="8" max="120" value="28"><span class="input-unit">pt</span></label><label class="color-label">字体颜色<input id="watermark-color" type="color" value="#ff575f"></label></div>
+            <label>四周边距 / 平铺间距<div class="number-field"><input id="watermark-margin" type="number" min="0" max="500" value="28"><span>pt</span></div></label>
+            <label for="watermark-angle">旋转角度<output id="angle-value">-30°</output></label><input id="watermark-angle" type="range" min="-180" max="180" value="-30">
+            <label for="watermark-opacity">不透明度<output id="opacity-value">30%</output></label><input id="watermark-opacity" type="range" min="5" max="100" value="30">
+            <label class="checkbox-label tile-option"><input id="watermark-tile" type="checkbox">平铺水印</label>
+            <label for="watermark-position">水印位置</label><select id="watermark-position"><option value="0-0">左上</option><option value="0-1">上方居中</option><option value="0-2">右上</option><option value="1-0">左侧居中</option><option value="1-1" selected>居中</option><option value="1-2">右侧居中</option><option value="2-0">左下</option><option value="2-1">下方居中</option><option value="2-2">右下</option></select>
+            <p class="option-hint">支持中文文字。点击文件的预览按钮查看当前水印效果，原文件不会被覆盖。</p>
+          </div>
+          <div data-options="extract" hidden><div class="inline-options"><label>最小图片边长<select id="extract-min"><option value="0">全部图片</option><option value="32" selected>32 像素</option><option value="100">100 像素</option><option value="300">300 像素</option></select></label><label class="checkbox-label"><input id="extract-dedupe" type="checkbox" checked>跳过重复图片</label></div><p class="option-hint">提取 PDF 中的内嵌位图并保存为 PNG。矢量插画和整页截图请使用「PDF 转图片」。</p></div>
+          <div data-options="images" hidden><div class="inline-options"><label>图片格式<select id="image-format"><option value="png">PNG · 无损</option><option value="jpg">JPG · 较小</option></select></label></div></div>
+          <div data-options="word" hidden><label>转换模式<select id="word-mode"><option value="text">可编辑文字</option><option value="image">保留外观（图片）</option></select></label><p class="option-hint" id="word-hint">提取文字到 DOCX；不保留复杂排版、图片及表格。扫描件请使用图片模式，本工具不含 OCR。</p></div>
+          <div data-options="ppt" hidden><p class="conversion-note">每一页 PDF 生成一张图片幻灯片，输出 PPTX。页面外观保留，文字不可单独编辑；不同尺寸的页面会等比适配。</p></div>
+          <div data-options="excel" hidden><div class="inline-options"><label>提取方式<select id="excel-mode"><option value="columns">按文字位置分列</option><option value="lines">每行文字放入一列</option></select></label><label id="column-gap-field">分列间距<input id="column-gap" type="number" min="2" max="100" value="12"><span class="input-unit">pt</span></label></div><p class="option-hint">每页生成一个工作表，输出 XLSX。按文字位置推测列，复杂表格需手动调整；扫描件不支持，未进行 OCR。</p></div>
+          <div id="render-options" class="inline-options" hidden><label>输出分辨率<select id="render-dpi"><option value="96">96 DPI</option><option value="150" selected>150 DPI</option><option value="200">200 DPI</option><option value="300">300 DPI</option></select></label><label id="quality-field">JPG 质量<input id="render-quality" type="number" min="30" max="100" value="90"><span class="input-unit">%</span></label></div>
+          <div id="range-field" class="range-field" hidden><label for="page-range">页码范围 <span>留空表示全部</span></label><input id="page-range" type="text" placeholder="例如：1-3,5,8-10" autocomplete="off" spellcheck="false"><p class="option-hint">页码范围分别应用于每个文件，单次每文件最多处理 500 页。</p></div>
+        </section>
+        <section class="files-area" aria-label="文件与处理结果">
+          <div class="file-toolbar"><button id="add-files" class="add-button"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span id="add-label">添加文件</span><kbd>Ctrl O</kbd></button><div class="toolbar-right"><span id="file-count">0 个文件</span><button id="clear-files" class="subtle-button" disabled><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg><span>清空列表</span></button></div><input id="file-input" type="file" accept=".pdf,application/pdf" multiple hidden></div>
+          <div id="import-state" class="import-state" role="status" hidden></div>
+          <p id="image-excluded" class="inline-notice" hidden>图片仅参与 PDF 合并，当前工具会跳过图片文件。</p>
+          <div id="file-scroll" class="file-scroll">
+            <div id="empty-state" class="empty-state"><div class="empty-illustration"><div class="paper paper-back"></div><div class="paper paper-front"><svg aria-hidden="true"><use href="#i-file"/></svg><span>PDF</span><i></i><i></i><i></i></div><span class="empty-plus">+</span></div><h3>从一份文档开始</h3><p>将 PDF 文件拖放到这里，或点击上方添加文件</p><span class="empty-caption">支持批量处理 · 单个文件最大 100 MB</span><button id="empty-add" class="empty-add">选择 PDF 文件<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
+            <div id="file-list" class="file-list"></div>
+            <section id="results" class="results" aria-labelledby="results-title" hidden><div class="results-heading"><h3 id="results-title">处理结果</h3><span id="results-count"></span></div><div id="result-list"></div></section>
+          </div>
+          <div id="drop-overlay" class="drop-overlay" hidden><svg class="icon"><use href="#i-plus"/></svg><strong>松开以添加文件</strong></div>
+        </section>
+      </div>
+      <footer class="actionbar"><div class="status-column"><span id="status" role="status" aria-live="polite">准备就绪，添加文件后即可开始</span><progress id="progress" max="1" value="0" hidden></progress></div><div class="action-buttons"><button id="download-all" class="download-all" hidden><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>下载全部</span></button><button id="cancel" class="subtle-button" hidden>取消处理</button><button id="start" class="primary" disabled><span id="start-label">开始压缩</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div></footer>
+    </main>
+  </div>
+  <dialog id="preview" aria-labelledby="preview-title"><div class="dialog-heading"><h2 id="preview-title">文档预览</h2><button id="preview-close" class="icon-button" aria-label="关闭预览"><svg class="icon"><use href="#i-close"/></svg></button></div><div class="preview-controls"><button id="preview-prev">上一页</button><span id="preview-page"></span><button id="preview-next">下一页</button><span id="preview-kind"></span></div><div id="preview-content" class="preview-content"><span>正在加载预览…</span></div><p class="dialog-hint">预览使用较低分辨率，最终结果以输出文件为准。</p></dialog>
+  <dialog id="settings" aria-labelledby="settings-title"><div class="dialog-heading"><h2 id="settings-title">设置与说明</h2><button id="settings-close" class="icon-button" aria-label="关闭设置"><svg class="icon"><use href="#i-close"/></svg></button></div><div class="settings-content"><label for="theme">外观<select id="theme"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select></label><h3>文件仅在本机处理</h3><p>不上传文件，不访问在线转换服务。只保存外观偏好，退出插件后清空文件队列；下载不会覆盖原文件。</p><h3>处理能力</h3><p>基本压缩保留文字和矢量内容。强压缩将页面转为 JPG，文字、链接、表单及批注的交互能力会丢失；若体积没有减小，会返回原文件。</p><p>Word 的文字模式适用于有文字层的 PDF；图片模式和 PPT 保留页面外观。Excel 按位置提取文字，不保证复杂表格的识别准确度。本工具不包含 OCR。</p><h3>使用提示</h3><p>Ctrl+O 添加文件；Ctrl+Enter 开始处理。合并卡片可拖动排序，也可点击上移 / 下移。清空列表只移除队列，不会删除本地文件。</p><p>单文件不超过 100 MB，队列合计不超过 200 MB，最多 50 个文件。除基本压缩外，每个文件单次最多处理 500 页；合并总计最多 500 页。超大页面按 1600 万像素 / 最长边 8192 像素限制渲染。不支持加密 PDF。</p></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

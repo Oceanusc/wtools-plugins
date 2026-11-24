@@ -2,7 +2,7 @@
   "name": "wtools-json-editor",
   "title": "JSON 编辑器",
   "description": "双栏 JSON 编辑与 JavaScript 过滤，支持 URL Params、XML、YAML 自动转换，以及压缩、转义和 TypeScript 类型生成。",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "WTools",
   "main": "index.html",
   "platform": ["win32"],

@@ -38,7 +38,7 @@ function message(text, error = false, target = $('status')) {
   target.textContent = text; target.toggleAttribute('data-error', error);
 }
 async function request(op, payload = {}) {
-  const response = await fetch('/_atools/hosts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ op, ...payload }) });
+  const response = await fetch('/_wtools/hosts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ op, ...payload }) });
   if ([403, 404].includes(response.status)) throw new Error('请在已授权此版本 hosts 插件的 WTools 构建中运行。');
   const result = await response.json();
   if (!response.ok) throw new Error(result.error || '操作失败，请重试。');

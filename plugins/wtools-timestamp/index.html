@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>时间戳转换</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="model.js" defer></script>
+  <script src="index.js" defer></script>
+</head>
+<body>
+  <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="m9 3-1 3-3 1-2 5 2 5 3 1 1 3h6l1-3 3-1 2-5-2-5-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14m6-14v14"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 4 12 8-12 8Z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 11a9 9 0 1 1 2 7M3 4v7h7"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+  </svg>
+  <header class="header">
+    <div class="brand">
+      <img src="logo.svg" width="36" height="36" alt="">
+      <div><h1>时间戳转换</h1><p>日期与时间戳，轻松互转</p></div>
+    </div>
+    <button id="open-settings" type="button" class="icon-button" title="设置" aria-label="打开设置"><svg class="icon"><use href="#i-settings"/></svg></button>
+  </header>
+
+  <main class="workspace">
+    <div class="converter">
+      <div class="options">
+        <div class="unit-switch" role="group" aria-label="时间戳单位">
+          <button type="button" data-unit="ms" aria-pressed="true">毫秒 <small>ms</small></button>
+          <button type="button" data-unit="s" aria-pressed="false">秒 <small>s</small></button>
+        </div>
+        <label class="zone-select"><span class="sr-only">转换时区</span><select id="timezone"></select></label>
+      </div>
+
+      <section class="conversion-section" aria-labelledby="date-heading">
+        <div class="section-heading">
+          <h2 id="date-heading"><label for="date-input">日期</label><svg class="icon arrow" aria-hidden="true"><use href="#i-arrow"/></svg>时间戳</h2>
+          <button id="use-current-date" type="button" class="text-button">使用当前时间</button>
+        </div>
+        <p class="context" id="date-zone"></p>
+        <div class="conversion-row">
+          <div class="input-column">
+            <div class="date-field">
+              <input id="date-input" type="text" autocomplete="off" spellcheck="false" maxlength="23" placeholder="YYYY-MM-DD HH:mm:ss" aria-describedby="date-error">
+              <button id="open-calendar" type="button" class="icon-button" aria-label="选择日期和时间" title="选择日期和时间"><svg class="icon"><use href="#i-calendar"/></svg></button>
+              <input id="date-picker" class="date-picker" type="datetime-local" step="0.001" min="0001-01-01T00:00" max="9999-12-31T23:59:59.999" tabindex="-1" aria-label="日历日期和时间">
+            </div>
+            <p id="date-error" class="field-error" role="status"></p>
+          </div>
+          <button id="timestamp-result" type="button" class="result" title="点击复制时间戳 · Ctrl/Command+Shift+Z（输入框外）" disabled><span class="result-value">—</span><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg></button>
+        </div>
+      </section>
+
+      <section class="conversion-section" aria-labelledby="timestamp-heading">
+        <div class="section-heading">
+          <h2 id="timestamp-heading"><label for="timestamp-input">时间戳</label><svg class="icon arrow" aria-hidden="true"><use href="#i-arrow"/></svg>日期</h2>
+          <span id="input-unit" class="unit-label">毫秒 · ms</span>
+        </div>
+        <p class="context" id="timestamp-zone"></p>
+        <div class="conversion-row">
+          <div class="input-column">
+            <input id="timestamp-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" maxlength="24" aria-describedby="timestamp-error" placeholder="输入毫秒时间戳">
+            <p id="timestamp-error" class="field-error" role="status"></p>
+          </div>
+          <button id="date-result" type="button" class="result date-result" title="点击复制日期 · Ctrl/Command+Shift+X（输入框外）" disabled><span class="result-value">—</span><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg></button>
+        </div>
+      </section>
+
+      <section class="current-section" aria-labelledby="current-heading">
+        <div class="section-heading"><h2 id="current-heading">当前时间戳 <span id="current-unit">（毫秒）</span></h2><span id="live-state" class="live-state"><i></i>实时</span></div>
+        <div class="current-row">
+          <button id="current-result" type="button" class="result current-result" title="点击复制当前时间戳"><span class="result-value">—</span><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg></button>
+          <button id="pause" type="button" class="pause-button" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-pause"/></svg><span>暂停</span></button>
+        </div>
+        <p id="current-date" class="context current-date"></p>
+      </section>
+    </div>
+    <footer class="footer"><span>Unix 时间戳 · 点击结果即可复制</span><span id="status" role="status"></span></footer>
+  </main>
+
+  <dialog id="settings" aria-labelledby="settings-title">
+    <form id="settings-form">
+      <div class="settings-header"><h2 id="settings-title">设置</h2><button id="close-settings" type="button" class="icon-button" aria-label="关闭设置"><svg class="icon"><use href="#i-close"/></svg></button></div>
+      <div class="settings-body">
+        <div class="settings-label"><h3>主页可选时区</h3><span id="zone-count"></span></div>
+        <p class="settings-hint">勾选的时区将出现在主页下拉框中，至少保留一个。</p>
+        <label class="zone-search"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><span class="sr-only">搜索时区名称、UTC 偏移或 ID</span><input id="zone-search" type="search" placeholder="搜索时区名称、UTC 偏移或 ID" autocomplete="off"></label>
+        <div id="zone-list" class="zone-list" role="group" aria-label="主页可选时区"></div>
+        <p id="zone-empty" class="settings-hint" hidden>没有匹配的时区，试试城市名称、UTC+08:00 或 Asia/Shanghai。</p>
+        <fieldset class="theme-field"><legend>主题</legend><div class="theme-options">
+          <label><input type="radio" name="theme" value="system">跟随系统</label>
+          <label><input type="radio" name="theme" value="light">浅色</label>
+          <label><input type="radio" name="theme" value="dark">深色</label>
+        </div></fieldset>
+        <p class="settings-hint">设置仅保存在本机。日期转换使用对应日期的时区偏移，自动处理夏令时。</p>
+      </div>
+      <div class="settings-footer">
+        <button id="reset-settings" type="button" class="button"><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg>恢复默认</button>
+        <p id="settings-error" class="field-error" role="status"></p>
+        <div class="settings-actions"><button id="cancel-settings" type="button" class="button">取消</button><button type="submit" class="button primary">保存</button></div>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

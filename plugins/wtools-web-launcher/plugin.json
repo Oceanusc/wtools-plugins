@@ -2,7 +2,7 @@
   "name": "wtools-web-launcher",
   "title": "网页快开",
   "description": "像启动应用一样打开网页，支持分类、一键打开多个网页和为不同网页选择浏览器。",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "WTools",
   "main": "index.html",
   "logo": "logo.svg",

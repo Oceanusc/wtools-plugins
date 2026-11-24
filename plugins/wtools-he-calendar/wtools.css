@@ -1,0 +1,106 @@
+.calendar-container.light-mode .calendar-header .year-month,
+.calendar-container.light-mode .calendar-header .icon-btn,
+.calendar-container.light-mode .calendar-header .text-btn,
+.calendar-container.light-mode .calendar-header .day-diff,
+.calendar-container.light-mode .week-header {
+  color: var(--text-color, #1f2937);
+}
+
+.calendar-container.light-mode .calendar-header .year-month.active {
+  color: var(--on-primary, #fff);
+}
+
+#notice {
+  position: fixed;
+  z-index: 10000;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  padding: 10px 16px;
+  border: 1px solid GrayText;
+  border-radius: 8px;
+  background: Canvas;
+  color: CanvasText;
+  font: 13px/1.6 system-ui, sans-serif;
+  overflow-wrap: anywhere;
+}
+
+/* Use the plugin viewport instead of the upstream desktop preview frame. */
+html, body, #app, .app-container {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+.app-container:not(.is-utools) { padding: 0; }
+.app-container .calendar-container {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.calendar-container .calendar-header { flex-shrink: 0; gap: 8px; }
+.calendar-container .main-content,
+.calendar-container .calendar-grid-wrapper,
+.calendar-container .grid-stage { min-width: 0; min-height: 0; }
+.calendar-container .week-header,
+.calendar-container .grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.calendar-container .grid { grid-template-rows: repeat(6, minmax(0, 1fr)); }
+.calendar-container .day-cell { min-width: 0; min-height: 0; padding: 4px; }
+.calendar-container .lunar-day { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.calendar-container .almanac-panel { flex: 0 0 240px; width: 240px; min-width: 0; }
+@media (max-width: 900px) {
+  .calendar-container .calendar-header { padding: 8px 10px; }
+  .calendar-container .actions { gap: 5px; }
+  .calendar-container .year-month { font-size: 16px; padding-inline: 5px; }
+  .calendar-container .calendar-grid-wrapper { padding: 10px; }
+  .calendar-container .almanac-panel { flex-basis: 220px; width: 220px; padding: 12px; gap: 10px; }
+  .calendar-container .solar-day { font-size: 16px; }
+  .calendar-container .lunar-day { font-size: 11px; }
+}
+@media (max-width: 600px) {
+  .calendar-container .calendar-header { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
+  .calendar-container .current-info { min-width: 0; }
+  .calendar-container .actions { margin-left: auto; gap: 4px; }
+  .calendar-container .icon-btn, .calendar-container .text-btn { padding: 4px 6px; }
+  .calendar-container .day-diff { display: none; }
+  .calendar-container .main-content { display: grid; grid-template-rows: minmax(0, 1fr) minmax(64px, 28%); }
+  .calendar-container .almanac-panel { width: auto; border-top: 1px solid var(--border-color); box-shadow: none; padding: 8px 12px; }
+  .calendar-container .calendar-grid-wrapper { padding: 6px; }
+  .calendar-container .week-header { margin-bottom: 4px; font-size: 12px; }
+  .calendar-container .day-cell { padding: 2px; }
+  .calendar-container .holiday-tag { top: 2px; right: 2px; font-size: 9px; padding: 1px 2px; }
+  .calendar-container .picker-dropdown { max-height: calc(100dvh - 72px); overflow: auto; }
+}
+@media (max-height: 430px) {
+  .calendar-container .calendar-header { padding-block: 5px; }
+  .calendar-container .calendar-grid-wrapper { padding: 5px; }
+  .calendar-container .week-header { font-size: 11px; margin-bottom: 3px; }
+  .calendar-container .grid { gap: 2px; }
+  .calendar-container .day-cell { padding: 1px; }
+  .calendar-container .solar-day { font-size: 13px; line-height: 1.1; margin-bottom: 1px; }
+  .calendar-container .lunar-day { font-size: 10px; line-height: 1.1; }
+  .calendar-container .settings-panel { max-height: calc(100dvh - 60px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* At this height the six-row month cannot fit two text lines per day.
+   Keep the dates legible; the selected day's lunar date stays in the detail panel. */
+@media (max-height: 360px) and (max-width: 600px) {
+  .calendar-container .day-cell .lunar-day { display: none; }
+  .calendar-container .day-cell .solar-day { flex-shrink: 0; margin-bottom: 0; }
+  .calendar-container .holiday-tag { font-size: 8px; padding: 0 1px; }
+}

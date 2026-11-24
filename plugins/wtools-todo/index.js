@@ -58,7 +58,7 @@ function notice(el, text, error = false) {
   el.toggleAttribute("data-error", error);
 }
 async function request(op, data = {}) {
-  const response = await fetch("/_atools/todo", {
+  const response = await fetch("/_wtools/todo", {
     method: "POST",
     body: JSON.stringify({ op, ...data }),
   });

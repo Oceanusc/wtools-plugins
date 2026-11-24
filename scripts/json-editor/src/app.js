@@ -128,14 +128,20 @@ function run() {
     $('run').disabled = true; status('run-status', '正在运行…');
     const version = runVersion;
     frame = document.createElement('iframe'); frame.hidden = true; frame.sandbox = 'allow-scripts';
-    frame.srcdoc = '<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'nonce-wtools-json-filter\' \'unsafe-eval\'; worker-src blob:; connect-src \'none\'; form-action \'none\'; base-uri \'none\'"><script nonce="wtools-json-filter">' + runnerCode + '</script>';
+    frame.srcdoc = '<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'nonce-wtools-json-filter\'; worker-src blob:; connect-src \'none\'; form-action \'none\'; base-uri \'none\'"><script nonce="wtools-json-filter">' + runnerCode + '</script>';
     document.body.append(frame);
-    runTimer = setTimeout(() => { if (version !== runVersion) return; cancelRun(); status('run-status', '执行超过 2 秒，已中断', true); message('执行超过 2 秒，已中断', true); }, 2000);
+    runTimer = setTimeout(() => { if (version !== runVersion) return; cancelRun(); status('run-status', '执行环境启动超时，请重试', true); }, 10000);
   } catch (error) { status('run-status', error.message, true); message(error.message, true); }
 }
 addEventListener('message', event => {
   if (!frame || event.source !== frame.contentWindow || !pendingRun) return;
-  if (event.data?.ready) { frame.contentWindow.postMessage(pendingRun, '*'); return; }
+  if (event.data?.ready) {
+    clearTimeout(runTimer);
+    const version = runVersion;
+    runTimer = setTimeout(() => { if (version !== runVersion) return; cancelRun(); status('run-status', '执行超过 2 秒，已中断', true); message('执行超过 2 秒，已中断', true); }, 2000);
+    frame.contentWindow.postMessage(pendingRun, '*');
+    return;
+  }
   const response = event.data; cancelRun();
   if (response?.ok) {
     try { show(JSON.parse(response.json), 'JSON', false, '过滤完成'); status('run-status', '✓ 运行成功'); }

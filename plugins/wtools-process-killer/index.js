@@ -1,6 +1,6 @@
 const get = id => document.getElementById(id);
 const service = window.processService;
-const host = window.wtools || window.utools;
+const host = window.wtools;
 const dialog = get('details');
 const search = get('search');
 const sortable = Array.from(document.querySelectorAll('[data-sort]'));
@@ -292,7 +292,7 @@ get('apply-action').addEventListener('click', async () => {
 });
 
 if (!service) {
-  get('summary').textContent = '请在 uTools 开发者工具中运行';
+  get('summary').textContent = '请在 WTools 中运行此插件';
   get('refresh').disabled = true;
   get('auto-refresh').disabled = true;
   for (const control of document.querySelectorAll('.filters button, .filters input, th button')) control.disabled = true;

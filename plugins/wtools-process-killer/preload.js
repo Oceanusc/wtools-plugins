@@ -6,7 +6,7 @@
   }
 
   async function request(data) {
-    const response = await fetch("/_atools/processes", {
+    const response = await fetch("/_wtools/processes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
@@ -57,7 +57,7 @@
     change: (pid, identity, restart) => request({ op: "change", pid, identity, restart })
   };
 
-  (window.wtools || window.utools).onMainPush(async ({ code, payload }) => {
+  window.wtools.onMainPush(async ({ code, payload }) => {
     if (code !== "search" || typeof payload !== "string" || !payload.trim()) return [];
     const query = payload.trim().toLowerCase();
     const port = Number(query.replace(/^:/, ""));

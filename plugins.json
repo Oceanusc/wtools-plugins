@@ -1,53 +1,81 @@
 {
   "plugins": [
     {
+      "directory": "wtools-coding-helper",
+      "category": "development",
+      "minWtoolsVersion": "0.6.7",
+      "featured": false,
+      "publishedAt": 1795525713870
+    },
+    {
+      "directory": "wtools-timestamp",
+      "category": "development",
+      "minWtoolsVersion": "0.6.7",
+      "featured": false,
+      "publishedAt": 1795525713872
+    },
+    {
       "directory": "wtools-json-editor",
       "category": "development",
       "minWtoolsVersion": "0.6.7",
       "featured": false,
-      "publishedAt": 1795449966830
+      "publishedAt": 1795525713872
     },
     {
       "directory": "wtools-memo",
       "category": "productivity",
-      "minWtoolsVersion": "0.6.8",
+      "minWtoolsVersion": "0.6.9",
       "featured": true,
-      "publishedAt": 1795453169629
+      "publishedAt": 1795525713872
     },
     {
       "directory": "wtools-hosts",
       "category": "network",
-      "minWtoolsVersion": "0.6.8",
+      "minWtoolsVersion": "0.6.9",
       "featured": false,
-      "publishedAt": 1795450592380
+      "publishedAt": 1795525713872
     },
     {
       "directory": "wtools-todo",
       "category": "productivity",
-      "minWtoolsVersion": "0.6.8",
+      "minWtoolsVersion": "0.6.9",
       "featured": false,
-      "publishedAt": 1795450213347
+      "publishedAt": 1795525713872
     },
     {
       "directory": "wtools-process-killer",
       "category": "system",
-      "minWtoolsVersion": "0.6.7",
+      "minWtoolsVersion": "0.6.9",
       "featured": false,
-      "publishedAt": 1795404691251
+      "publishedAt": 1795525713872
     },
     {
       "directory": "wtools-web-launcher",
       "category": "productivity",
-      "minWtoolsVersion": "0.6.8",
+      "minWtoolsVersion": "0.6.9",
       "featured": false,
-      "publishedAt": 1795449938611
+      "publishedAt": 1795525713872
+    },
+    {
+      "directory": "wtools-pdf",
+      "category": "productivity",
+      "minWtoolsVersion": "0.6.7",
+      "featured": false,
+      "publishedAt": 1795525713872
     },
     {
       "directory": "wtools-markdown",
       "category": "text",
       "minWtoolsVersion": "0.6.7",
       "featured": false,
-      "publishedAt": 1795450448535
+      "publishedAt": 1795525713872
+    },
+    {
+      "directory": "wtools-he-calendar",
+      "category": "productivity",
+      "minWtoolsVersion": "0.6.9",
+      "featured": false,
+      "publishedAt": 1795525713872
     }
   ]
 }

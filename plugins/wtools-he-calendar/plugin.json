@@ -1,0 +1,17 @@
+{
+  "name": "wtools-he-calendar",
+  "title": "合社日历",
+  "description": "有温度的中国风日历，提供农历、黄历宜忌、传统节日、节气主题及多城市实时天气与预报。",
+  "version": "1.6.3",
+  "author": "阿裕Addyu / WTools 适配",
+  "main": "index.html",
+  "logo": "logo.png",
+  "platform": ["win32"],
+  "features": [
+    {
+      "code": "calendar",
+      "explain": "查看合社日历、农历和黄历",
+      "cmds": ["合社日历", "日历", "万年历", "黄历", "calendar"]
+    }
+  ]
+}

@@ -11,7 +11,7 @@ const initial = { public: '# 公共配置 · 所有环境共用\n# Localhost\n12
 let stored = structuredClone(initial), current = initial.public, calls = [], fail = '', conflicts = [], denied = false;
 const server = createServer(async (req, res) => {
   try {
-    if (req.url === '/_atools/hosts') {
+    if (req.url === '/_wtools/hosts') {
       let body = ''; for await (const chunk of req) body += chunk;
       const data = JSON.parse(body); calls.push(data);
       res.setHeader('Content-Type', 'application/json');

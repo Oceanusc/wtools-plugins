@@ -1,0 +1,13 @@
+{
+  "name": "wtools-timestamp",
+  "title": "时间戳转换",
+  "description": "秒、毫秒时间戳与日期双向转换，支持全球时区、实时当前时间戳和一键复制。",
+  "version": "1.0.0",
+  "author": "WTools",
+  "main": "index.html",
+  "logo": "logo.svg",
+  "platform": ["win32"],
+  "features": [
+    { "code": "timestamp", "cmds": ["时间戳转换", "时间戳", "timestamp", "sjc"] }
+  ]
+}

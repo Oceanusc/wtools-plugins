@@ -104,7 +104,7 @@ const server = http.createServer((req, res) => {
     }
     await route.fulfill({ json: structuredClone(state) });
   };
-  await page.route("**/_atools/todo", handleTodoRoute);
+  await page.route("**/_wtools/todo", handleTodoRoute);
   const url = `http://127.0.0.1:${server.address().port}`;
   await page.goto(url);
   await page.waitForSelector(".task");
@@ -119,7 +119,7 @@ const server = http.createServer((req, res) => {
     });
     const scaled = await context.newPage();
     scaled.on("pageerror", (e) => errors.push(e.message));
-    await scaled.route("**/_atools/todo", handleTodoRoute);
+    await scaled.route("**/_wtools/todo", handleTodoRoute);
     await scaled.goto(url);
     await scaled.waitForSelector(".task");
     await scaled.screenshot({ path: path.join(output, `todo-list-${scale * 100}.png`) });
