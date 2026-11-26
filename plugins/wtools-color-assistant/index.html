@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>颜色助手</title>
+  <link rel="icon" href="logo.svg">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="color-math.js"></script>
+  <script defer src="data-ui.js"></script>
+  <script defer src="data-traditional-cn.js"></script>
+  <script defer src="data-traditional-jp.js"></script>
+  <script defer src="data-gradients.js"></script>
+  <script defer src="media-tools.js"></script>
+  <script defer src="index.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand"><img src="logo.svg" alt="" width="28" height="28"><span>颜色助手</span></div>
+    <label class="hash-option"><input id="strip-hash" type="checkbox"> HEX 省略 #</label>
+  </header>
+  <div class="workspace">
+    <nav class="navigation" aria-label="功能">
+      <button type="button" data-page="color" aria-current="page" aria-controls="color"><span class="nav-icon icon-color" aria-hidden="true"></span>颜色</button>
+      <button type="button" data-page="image-palette" aria-controls="image-palette"><span class="nav-icon icon-image" aria-hidden="true"></span>图片色卡</button>
+      <button type="button" data-page="ui-palettes" aria-controls="ui-palettes"><span class="nav-icon icon-grid" aria-hidden="true"></span>UI 色卡</button>
+      <button type="button" data-page="traditional" aria-controls="traditional"><span class="nav-icon icon-traditional" aria-hidden="true"></span>传统色</button>
+      <button type="button" data-page="gradients" aria-controls="gradients"><span class="nav-icon icon-gradient" aria-hidden="true"></span>渐变色</button>
+      <button type="button" data-page="favorites" aria-controls="favorites"><span class="nav-icon icon-star" aria-hidden="true"></span>收藏颜色</button>
+    </nav>
+    <main id="content">
+      <section class="page" id="color" aria-labelledby="color-heading">
+        <div class="page-heading">
+          <h1 id="color-heading">颜色</h1>
+          <div class="actions">
+            <label class="button native-picker">选择颜色<input id="native-color" type="color" aria-label="选择颜色"></label>
+            <button type="button" id="eyedropper" hidden>屏幕取色</button>
+          </div>
+        </div>
+        <div class="color-workbench">
+          <div class="picker">
+            <div class="wheel-frame">
+              <div id="wheel" class="wheel" aria-hidden="true"><span id="wheel-marker"></span></div>
+            </div>
+            <div class="picker-controls">
+              <label for="hue">色相</label><input id="hue" class="hue-track" type="range" min="0" max="359.9" step="0.1" value="225">
+              <label for="saturation">饱和度</label><input id="saturation" type="range" min="0" max="100" step="0.1" value="100">
+              <label for="brightness">明度</label><input id="brightness" type="range" min="0" max="100" step="0.1" value="94.9">
+            </div>
+          </div>
+          <div class="color-inspector">
+            <div class="current-color" id="current-color">
+              <strong id="current-hex"></strong>
+              <button type="button" id="save-current">收藏</button>
+            </div>
+            <div id="formats" class="formats"></div>
+            <div id="harmonies" class="harmonies"></div>
+          </div>
+        </div>
+        <section class="comparison" aria-labelledby="comparison-heading">
+          <div class="section-heading">
+            <h2 id="comparison-heading">多色对比</h2>
+            <div class="actions">
+              <button type="button" id="add-slot">＋ 添加比较色</button>
+              <button type="button" id="save-comparison" disabled>收藏色板</button>
+            </div>
+          </div>
+          <div id="comparison-list" class="comparison-list"></div>
+          <div id="comparison-details" class="comparison-details" hidden>
+            <label>参照色 <select id="reference-color"></select></label>
+            <p id="comparison-result"></p>
+          </div>
+        </section>
+      </section>
+      <section class="page" id="image-palette" aria-labelledby="image-heading" hidden>
+        <div class="page-heading">
+          <h1 id="image-heading">图片色卡</h1>
+          <div class="actions">
+            <button type="button" id="pick-image" class="primary">打开图片</button>
+            <button type="button" id="paste-image">粘贴图片</button>
+          </div>
+        </div>
+        <input id="image-file" type="file" accept="image/*,.ico" hidden>
+        <div id="image-drop" class="image-drop">
+          <div id="image-empty" class="empty">
+            <span class="nav-icon icon-image" aria-hidden="true"></span>
+            <p>拖入图片，或按 Ctrl+V 粘贴</p>
+          </div>
+          <canvas id="image-preview" role="img" aria-label="当前图片，点击取色" hidden></canvas>
+        </div>
+        <p id="image-status" class="muted image-status" role="status"></p>
+        <div id="image-results" hidden>
+          <div class="section-heading">
+            <h2>提取颜色</h2>
+            <div class="actions">
+              <label>颜色数量 <select id="image-count">
+                <option>3</option><option>4</option><option>5</option><option selected>6</option><option>7</option>
+                <option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
+              </select></label>
+              <button type="button" id="save-image-palette">收藏色板</button>
+            </div>
+          </div>
+          <div id="image-colors" class="swatch-grid"></div>
+          <div class="section-heading" id="pixel-heading" hidden><h2>像素取色</h2></div>
+          <div id="pixel-color" class="swatch-grid"></div>
+        </div>
+      </section>
+      <section class="page" id="ui-palettes" aria-labelledby="ui-heading" hidden>
+        <div class="page-heading"><h1 id="ui-heading">UI 色卡</h1></div>
+        <div id="ui-options" class="segmented" role="group" aria-label="UI 色卡库">
+          <button type="button" data-ui="flat">Flat UI</button>
+          <button type="button" data-ui="fluent">Fluent Design</button>
+          <button type="button" data-ui="opencolor">Open Color</button>
+          <button type="button" data-ui="antd">Ant Design</button>
+          <button type="button" data-ui="material">Material Design</button>
+        </div>
+        <div id="ui-groups" class="palette-groups"></div>
+      </section>
+      <section class="page" id="traditional" aria-labelledby="traditional-heading" hidden>
+        <div class="page-heading"><h1 id="traditional-heading">传统色</h1></div>
+        <div class="filter-bar">
+          <div id="traditional-options" class="segmented" role="group" aria-label="传统色库">
+            <button type="button" data-country="cn">中国传统色</button>
+            <button type="button" data-country="jp">日本传统色</button>
+          </div>
+          <input id="traditional-search" type="search" placeholder="搜索色名或 HEX" aria-label="搜索色名或 HEX">
+        </div>
+        <div class="catalog-info">
+          <label id="term-control">节气 <select id="term-select"><option value="">全部节气</option></select></label>
+          <span id="traditional-count" class="muted" role="status"></span>
+        </div>
+        <div id="traditional-groups" class="palette-groups"></div>
+      </section>
+      <section class="page" id="gradients" aria-labelledby="gradients-heading" hidden>
+        <div class="page-heading">
+          <h1 id="gradients-heading">渐变色</h1>
+          <button type="button" id="new-gradient" class="primary">＋ 自定义渐变</button>
+        </div>
+        <div id="gradient-filters" class="segmented gradient-filters" role="group" aria-label="按色系筛选"></div>
+        <div id="gradient-grid" class="gradient-grid"></div>
+      </section>
+      <section class="page" id="favorites" aria-labelledby="favorites-heading" hidden>
+        <div class="page-heading"><h1 id="favorites-heading">收藏颜色</h1></div>
+        <div id="favorite-options" class="segmented" role="group" aria-label="收藏类型">
+          <button type="button" data-favorite="all">全部</button>
+          <button type="button" data-favorite="color">单色</button>
+          <button type="button" data-favorite="palette">色板</button>
+          <button type="button" data-favorite="gradient">渐变</button>
+        </div>
+        <div id="favorite-list" class="favorite-list"></div>
+      </section>
+    </main>
+  </div>
+  <dialog id="swatch-dialog" aria-labelledby="swatch-title">
+    <div class="dialog-heading"><h2 id="swatch-title"></h2><button type="button" data-close aria-label="关闭">×</button></div>
+    <div class="swatch-preview" id="swatch-preview"></div>
+    <div class="dialog-body">
+      <p class="swatch-value"><strong id="swatch-hex"></strong><span id="swatch-reading" class="muted"></span></p>
+      <div class="actions">
+        <button type="button" id="swatch-copy" class="primary">复制 HEX</button>
+        <button type="button" id="swatch-open">在颜色页打开</button>
+        <button type="button" id="swatch-compare">加入对比</button>
+        <button type="button" id="swatch-save">收藏</button>
+      </div>
+      <p class="dialog-notice" role="status"></p>
+    </div>
+  </dialog>
+  <dialog id="gradient-dialog" aria-labelledby="gradient-title">
+    <div class="dialog-heading"><h2 id="gradient-title"></h2><button type="button" data-close aria-label="关闭">×</button></div>
+    <div class="gradient-preview" id="gradient-preview"></div>
+    <div class="dialog-body gradient-editor">
+      <div class="gradient-angle">
+        <label for="gradient-angle">方向</label>
+        <input id="gradient-angle" type="range" min="0" max="360" step="1">
+        <output id="gradient-angle-value" for="gradient-angle"></output>
+      </div>
+      <div class="actions" id="gradient-stops"></div>
+      <div class="gradient-code">
+        <input id="gradient-css" type="text" readonly aria-label="渐变 CSS">
+        <button type="button" id="copy-gradient-css">复制 CSS</button>
+      </div>
+      <div class="export-size">
+        <label>宽度 (px) <input id="gradient-width" type="number" value="1000" min="1" max="4096" step="1" required></label>
+        <label>高度 (px) <input id="gradient-height" type="number" value="1000" min="1" max="4096" step="1" required></label>
+      </div>
+      <div class="actions">
+        <button type="button" id="download-gradient" class="primary">下载 PNG</button>
+        <button type="button" id="copy-gradient-image">复制图片</button>
+        <button type="button" id="save-gradient">收藏渐变</button>
+      </div>
+      <p class="dialog-notice" role="status"></p>
+    </div>
+  </dialog>
+  <div id="notice" class="notice" role="status" aria-live="polite"></div>
+</body>
+</html>

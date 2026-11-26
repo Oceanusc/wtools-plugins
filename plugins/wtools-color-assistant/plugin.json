@@ -1,0 +1,73 @@
+{
+  "name": "wtools-color-assistant",
+  "title": "颜色助手",
+  "description": "集颜色拾取、多格式转换与多色对比、图片色卡提取、UI 色卡（Flat UI / Fluent Design / Open Color / Ant Design / Material Design）、中国传统色 384（故宫二十四节气）与日本传统色 465、渐变色生成与导出及颜色收藏于一体的全能色彩工具。",
+  "version": "1.0.0",
+  "author": "WTools",
+  "main": "index.html",
+  "logo": "logo.svg",
+  "platform": ["win32"],
+  "pluginSetting": {
+    "width": 860,
+    "height": 600,
+    "minWidth": 410,
+    "minHeight": 300
+  },
+  "features": [
+    {
+      "code": "color",
+      "explain": "颜色拾取、多格式转换（HEX/RGB/HSV/HSL/CMYK/HSI/LAB）与多色切换对比",
+      "cmds": [
+        "颜色助手",
+        "颜色",
+        "取色器",
+        "配色",
+        "颜色对比",
+        "color",
+        "color-picker",
+        "yszs",
+        {
+          "type": "regex",
+          "label": "颜色助手解析色值",
+          "match": "/^#?([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/"
+        }
+      ]
+    },
+    {
+      "code": "image-palette",
+      "explain": "从图片提取主题色卡并支持像素级吸色",
+      "cmds": [
+        "图片色卡",
+        "图片取色",
+        "颜色提取",
+        { "type": "img", "label": "提取图片色卡" },
+        {
+          "type": "files",
+          "label": "提取图片色卡",
+          "fileType": "file",
+          "match": "/\\.(png|jpe?g|webp|bmp|gif|svg|ico|avif)$/i"
+        }
+      ]
+    },
+    {
+      "code": "ui-palettes",
+      "explain": "Flat UI、Fluent Design、Open Color、Ant Design、Material Design 色卡",
+      "cmds": ["UI 色卡", "Flat UI", "Falt UI", "Fluent Design", "Open Color", "Ant Design", "Material Design"]
+    },
+    {
+      "code": "traditional",
+      "explain": "故宫二十四节气 384 种中国传统色与 465 种日本传统色",
+      "cmds": ["传统色", "中国传统色", "二十四节气", "日本传统色"]
+    },
+    {
+      "code": "gradients",
+      "explain": "精选渐变色库、角度调整、CSS 代码与高清渐变图片导出",
+      "cmds": ["渐变色", "CSS 渐变", "渐变"]
+    },
+    {
+      "code": "favorites",
+      "explain": "管理收藏的单色、色板与渐变方案",
+      "cmds": ["收藏颜色", "我的色卡"]
+    }
+  ]
+}

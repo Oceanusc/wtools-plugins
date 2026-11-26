@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <clipPath id="wheelClip">
+      <rect x="4" y="4" width="56" height="56" rx="14" ry="14"/>
+    </clipPath>
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="35%" stop-color="#ffffff" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g clip-path="url(#wheelClip)">
+    <polygon points="32,32 32,0 64,0" fill="#ff3b30"/>
+    <polygon points="32,32 64,0 64,32" fill="#ff9500"/>
+    <polygon points="32,32 64,32 64,64" fill="#ffcc00"/>
+    <polygon points="32,32 64,64 32,64" fill="#34c759"/>
+    <polygon points="32,32 32,64 0,64" fill="#00c7be"/>
+    <polygon points="32,32 0,64 0,32" fill="#007aff"/>
+    <polygon points="32,32 0,32 0,0" fill="#5856d6"/>
+    <polygon points="32,32 0,0 32,0" fill="#af52de"/>
+    <rect x="4" y="4" width="56" height="56" fill="url(#centerGlow)"/>
+  </g>
+  <rect x="4" y="4" width="56" height="56" rx="14" ry="14" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+</svg>

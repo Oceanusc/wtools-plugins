@@ -97,6 +97,13 @@
       "minWtoolsVersion": "0.6.7",
       "featured": false,
       "publishedAt": 1795679600000
+    },
+    {
+      "directory": "wtools-color-assistant",
+      "category": "media",
+      "minWtoolsVersion": "0.6.7",
+      "featured": false,
+      "publishedAt": 1795622400000
     }
   ]
 }
