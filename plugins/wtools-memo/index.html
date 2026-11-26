@@ -5,7 +5,7 @@
   <title>备忘快贴</title><link rel="stylesheet" href="./style.css"><script src="./index.js" defer></script>
 </head>
 <body>
-  <header class="top"><div class="brand"><span class="brand-icon">➤</span><h1>备忘快贴</h1></div><input id="search" type="search" aria-label="搜索收藏" placeholder="搜索（回车粘贴）" autocomplete="off"><button id="info" class="plain" title="使用说明" aria-label="使用说明">⋮</button></header>
+  <header class="top"><input id="search" type="search" aria-label="搜索收藏" placeholder="搜索（回车粘贴）" autocomplete="off"><button id="info" class="plain" title="使用说明" aria-label="使用说明">⋮</button></header>
   <main>
     <aside aria-label="收藏标签"><nav id="tags"></nav><div class="tag-tools"><button id="add-tag" title="新建标签" aria-label="新建标签">＋</button><button id="rename-tag" title="重命名标签" aria-label="重命名标签">✎</button><button id="delete-tag" title="删除标签" aria-label="删除标签">▣</button></div></aside>
     <section class="collection" aria-label="收藏内容"><div id="list" role="listbox" aria-label="收藏列表"></div><div id="empty" class="empty" hidden><div class="empty-icon">▤</div><h2>收藏常用，随取随贴</h2><p>快速收藏常用「文本」「代码」「图片」</p></div><section id="getting-started" class="getting-started" aria-label="开始使用" hidden><button id="dismiss-guide" class="dismiss-guide" type="button" aria-label="关闭使用引导" title="关闭使用引导">×</button><p>收藏文本、代码或图片，选中后按 Enter、→ 或双击即可粘贴。</p><div class="guide-actions"><button id="guide-new" type="button" class="primary">＋ 新建收藏</button><button id="guide-import" type="button">导入旧备忘</button></div></section></section>

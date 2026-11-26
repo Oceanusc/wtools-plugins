@@ -89,7 +89,8 @@ h1 { font-size: 21px; line-height: 1.2; }
   white-space: nowrap;
 }
 .button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-.filters { padding-block: 0 10px; }
+.filters { padding: 10px 20px; }
+.filters .toolbar { margin-left: auto; }
 .tabs { display: flex; gap: 3px; padding: 3px; border-radius: 8px; background: var(--surface-muted); }
 .tabs button { min-height: 29px; padding: 3px 10px; background: transparent; border: 0; border-radius: 5px; color: var(--muted); }
 .tabs button[aria-pressed=true] { background: var(--surface); color: var(--accent); font-weight: 600; }

@@ -10,8 +10,7 @@
   <script src="./index.js" defer></script>
 </head>
 <body>
-  <header><div class="brand"><img src="./logo.svg" alt=""><div><h1>网页快开</h1></div></div><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="查找名称或网址…" aria-label="查找网页"></label></header>
-  <nav class="tabs" aria-label="快开类型"><button id="web-tab" aria-pressed="true">▦　网页快开</button><button id="ai-tab" aria-pressed="false">➤　AI 快开</button><span id="total"></span></nav>
+  <nav class="tabs" aria-label="快开类型"><button id="web-tab" aria-pressed="true">▦　网页快开</button><button id="ai-tab" aria-pressed="false">➤　AI 快开</button><span id="total"></span><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="查找名称或网址…" aria-label="查找网页"></label></nav>
   <div class="workspace"><aside id="sidebar"><div class="section-label">我的分类</div><div id="categories"></div><div class="category-tools"><button id="add-category" title="新增分类">＋ 新分类</button><button id="edit-category" title="重命名分类" aria-label="重命名分类">✎</button><button id="delete-category" title="删除分类" aria-label="删除分类">⌫</button></div><div class="section-label">内置</div><button id="builtin">常用网站 <span>↗</span></button></aside>
   <main><div class="list-heading"><div><h2 id="category-title">默认分类</h2><p id="category-hint"></p></div><button id="open-category" class="subtle">↗ 打开此分类</button></div><div id="entries"></div><div id="empty" hidden><span>◇</span><h3>从一个常用网页开始</h3><p>添加网址，也可以把多个网页组合为一个入口。</p><button id="empty-add" class="primary">＋ 新增网页快开</button></div></main></div>
   <footer><label id="category-launch-label" class="launch-setting"><input id="category-launch" type="checkbox" role="switch"><span>开启分类启动<small>在启动器中一键打开此分类</small></span></label><span id="ai-note" hidden>直接打开 AI 网站，可为每个入口指定浏览器</span><button id="add-entry" class="primary">＋ 新增网页快开</button></footer>

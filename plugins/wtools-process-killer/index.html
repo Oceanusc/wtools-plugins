@@ -9,25 +9,16 @@
   <script src="index.js" defer></script>
 </head>
 <body>
-  <header class="header">
-    <div class="heading">
-      <img src="logo.png" width="38" height="38" alt="">
-      <div>
-        <h1>进程与端口</h1>
-        <p id="summary">正在读取系统进程</p>
-      </div>
-    </div>
-    <div class="toolbar">
-      <label class="toggle"><input type="checkbox" id="auto-refresh"> 自动刷新</label>
-      <button id="refresh" type="button" class="button">刷新</button>
-    </div>
-  </header>
   <div class="filters">
     <div class="tabs" role="group" aria-label="进程范围">
       <button id="all" type="button" aria-pressed="true">全部进程</button>
       <button id="with-ports" type="button" aria-pressed="false">有端口</button>
     </div>
     <label class="search"><span class="sr-only">搜索进程、PID 或端口</span><input id="search" type="search" placeholder="进程、PID 或端口"></label>
+    <div class="toolbar">
+      <label class="toggle"><input type="checkbox" id="auto-refresh"> 自动刷新</label>
+      <button id="refresh" type="button" class="button">刷新</button>
+    </div>
   </div>
   <main class="list" aria-label="进程列表">
     <table>

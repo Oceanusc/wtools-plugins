@@ -116,10 +116,6 @@ async function readSnapshot() {
   try {
     const snapshot = await service.refresh();
     rows = snapshot.rows;
-    const bound = rows.filter(row => row.ports.length).length;
-    get('summary').textContent = snapshot.portWarning
-      ? `${formatter.format(rows.length)} 个进程 · 端口暂不可用`
-      : `${formatter.format(rows.length)} 个进程 · ${formatter.format(bound)} 个有端口`;
     render();
     get('status').textContent = snapshot.portWarning || `更新于 ${new Date().toLocaleTimeString('zh-CN')}`;
     if (active && awaitingPid) {
@@ -132,7 +128,6 @@ async function readSnapshot() {
     }
   } catch {
     get('status').textContent = '读取进程失败，请重试。';
-    if (rows.length === 0) get('summary').textContent = '读取进程失败';
   } finally {
     get('refresh').disabled = false;
   }
@@ -292,7 +287,7 @@ get('apply-action').addEventListener('click', async () => {
 });
 
 if (!service) {
-  get('summary').textContent = '请在 WTools 中运行此插件';
+  get('status').textContent = '请在 WTools 中运行此插件';
   get('refresh').disabled = true;
   get('auto-refresh').disabled = true;
   for (const control of document.querySelectorAll('.filters button, .filters input, th button')) control.disabled = true;

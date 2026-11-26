@@ -106,11 +106,9 @@ function select(index) {
   selected = index;
   const profile = workspace.profiles[index], system = index === -2;
   const title = system ? '系统 hosts' : profile?.name ?? '公共配置';
-  $('breadcrumb').textContent = $('editor-title').textContent = title;
-  $('filename').textContent = system ? 'C:\\Windows\\System32\\drivers\\etc\\hosts' : `${title}.hosts`;
+  $('editor-title').textContent = title;
   $('editor-description').textContent = system ? '当前系统实际生效的内容，可重新读取以查看外部修改。' : profile ? '独立的 hosts 片段。勾选启用后，与公共配置合并。' : '首次使用时读取系统 hosts，作为所有方案的基础。';
-  $('readonly').hidden = !system; $('refresh').hidden = !system; $('editor-kind').hidden = system;
-  $('editor-kind').textContent = profile ? '自定义方案' : '基础配置';
+  $('readonly').hidden = !system; $('refresh').hidden = !system;
   $('more').hidden = !profile;
   let doc = documents.get(system ? 'system' : profile ?? 'public');
   const value = system ? systemText : profile?.content ?? workspace.public;
