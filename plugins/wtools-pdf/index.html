@@ -31,10 +31,6 @@
     <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v16m-6-6 6 6 6-6"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
   </svg>
-  <header class="header">
-    <div class="brand"><img src="logo.svg" width="34" height="34" alt=""><h1>PDF 处理</h1></div>
-    <span class="local-badge"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>离线 · 本地处理</span>
-  </header>
   <div class="app-layout">
     <aside class="sidebar">
       <nav aria-label="PDF 工具">
@@ -87,7 +83,7 @@
           <div id="import-state" class="import-state" role="status" hidden></div>
           <p id="image-excluded" class="inline-notice" hidden>图片仅参与 PDF 合并，当前工具会跳过图片文件。</p>
           <div id="file-scroll" class="file-scroll">
-            <div id="empty-state" class="empty-state"><div class="empty-illustration"><div class="paper paper-back"></div><div class="paper paper-front"><svg aria-hidden="true"><use href="#i-file"/></svg><span>PDF</span><i></i><i></i><i></i></div><span class="empty-plus">+</span></div><h3>从一份文档开始</h3><p>将 PDF 文件拖放到这里，或点击上方添加文件</p><span class="empty-caption">支持批量处理 · 单个文件最大 100 MB</span><button id="empty-add" class="empty-add">选择 PDF 文件<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
+            <div id="empty-state" class="empty-state"><div class="dropzone-card"><h3>PDF 压缩</h3><button id="empty-add" class="empty-add">选择 PDF 文件<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button><p>将 PDF 文件拖放到这里，或点击上方添加文件</p></div><div class="trust-row"><span>✓ 本地完成处理</span><span>✓ 可断网使用</span><span>✓ 保证数据隐私安全</span></div></div>
             <div id="file-list" class="file-list"></div>
             <section id="results" class="results" aria-labelledby="results-title" hidden><div class="results-heading"><h3 id="results-title">处理结果</h3><span id="results-count"></span></div><div id="result-list"></div></section>
           </div>
