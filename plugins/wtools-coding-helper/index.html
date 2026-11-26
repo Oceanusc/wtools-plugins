@@ -13,14 +13,13 @@
   <div class="workspace">
     <aside><nav id="tools" aria-label="编码工具"></nav><button id="theme" class="theme-btn" aria-label="切换颜色主题">主题：跟随系统</button></aside>
     <main>
-      <div class="heading"><div><h2 id="tool-title">Base64</h2><p id="tool-description">字符串与 Base64 互相转换，支持中文与 Emoji。</p></div><button id="example">填入示例</button><button id="toggle-options" aria-controls="options" aria-expanded="false">选项 ▾</button></div>
+      <div class="heading"><div><h2 id="tool-title">Base64</h2><p id="tool-description">字符串与 Base64 互相转换，支持中文与 Emoji。</p></div><button id="toggle-options" aria-controls="options" aria-expanded="false">选项 ▾</button></div>
       <div id="options" class="options">
-        <label id="direction-field">操作<select id="direction"><option value="encode">编码</option><option value="decode">解码</option></select></label>
+        <label id="direction-field">操作<select id="direction" hidden><option value="encode">编码</option><option value="decode">解码</option></select><div id="direction-segmented" class="segmented" role="group" aria-label="操作"><button type="button" data-value="encode" aria-pressed="true">编码</button><button type="button" data-value="decode" aria-pressed="false">解码</button></div></label>
         <label id="url-mode-field" hidden>编码范围<select id="url-mode"><option value="component">URL 参数（encodeURIComponent）</option><option value="uri">完整 URL（encodeURI）</option></select></label>
         <label id="unicode-format-field" hidden>编码格式<select id="unicode-format"><option value="utf16">UTF-16 · \uXXXX</option><option value="utf8">UTF-8 · \xXX</option><option value="codepoint">Unicode 码位 · U+XXXX</option><option value="escape">码位转义 · \u{…}</option><option value="entity">HTML 数字实体 · &amp;#…;</option></select></label>
         <label id="date-unit-field" hidden>时间戳单位<select id="date-unit"><option value="auto">自动（按数值大小）</option><option value="seconds">秒</option><option value="milliseconds">毫秒</option></select></label>
         <label id="date-zone-field" hidden>无时区时间按<select id="date-zone"><option value="local">本地时区</option><option value="utc">UTC</option></select></label>
-        <button id="now" hidden>获取当前时间</button>
         <label id="hash-source-field" hidden>输入类型<select id="hash-source"><option value="text">文本 · UTF-8</option><option value="file">文件</option></select></label>
         <label id="hash-algorithm-field" hidden>摘要算法<select id="hash-algorithm"><option value="all">全部算法</option><option>MD5</option><option>SHA1</option><option>SHA224</option><option>SHA256</option><option>SHA384</option><option>SHA512</option></select></label>
         <label id="from-base-field" hidden>原进制<input id="from-base" type="number" min="2" max="36" value="16"></label>
@@ -31,7 +30,7 @@
         <label id="image-prefix-field" class="checkbox" hidden><input id="image-prefix" type="checkbox" checked>包含 Data URL 前缀</label>
       </div>
       <div class="editors">
-        <section class="editor-panel" id="input-panel"><div class="panel-bar"><label for="input" id="input-label">输入</label><div><button id="recognize" title="识别输入内容并切换工具">智能识别</button><button id="clear">清空</button></div></div><textarea id="input" spellcheck="false" placeholder="在此输入或粘贴内容…"></textarea><div id="file-area" hidden><label class="file-picker"><span id="file-prompt">选择图片</span><input id="file" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/bmp,image/x-icon"></label><p id="file-info">也可以将文件拖放到此处</p><button id="remove-file" hidden>移除文件</button></div></section>
+        <section class="editor-panel" id="input-panel"><div class="panel-bar"><label for="input" id="input-label">输入</label><div><button id="now" hidden>当前时间</button><button id="example">示例</button><button id="recognize" title="识别输入内容并切换工具">智能识别</button><span class="bar-divider" aria-hidden="true"></span><button id="clear">清空</button></div></div><textarea id="input" spellcheck="false" placeholder="在此输入或粘贴内容…"></textarea><div id="file-area" hidden><label class="file-picker"><span id="file-prompt">选择图片</span><input id="file" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/bmp,image/x-icon"></label><p id="file-info">也可以将文件拖放到此处</p><button id="remove-file" hidden>移除文件</button></div></section>
         <section class="editor-panel"><div class="panel-bar"><label for="output">结果</label><div><button id="use-result" disabled>用作输入</button><button id="copy" disabled>复制</button></div></div><textarea id="output" readonly spellcheck="false" placeholder="转换结果将显示在这里"></textarea><div id="result-list" hidden></div><div id="image-result" hidden><img id="preview" alt="解码图片预览"><p id="image-info"></p><button id="save-image">保存图片</button></div></section>
       </div>
       <div class="action-bar"><p id="status" role="status" aria-live="polite">所有转换均在本地完成</p><button id="cancel" hidden>取消计算</button><button id="run" class="primary">编码</button></div>

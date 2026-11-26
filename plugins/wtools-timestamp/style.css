@@ -41,7 +41,7 @@ h1 { font-size: 18px; font-weight: 650; letter-spacing: .02em; }
 .unit-switch small { margin-left: 5px; font-size: 11px; font-weight: 400; }
 .unit-switch button[aria-pressed="true"] { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px #1713360b; }
 .zone-select { flex: 1; min-width: 0; max-width: 620px; }
-select { width: 100%; border: 1px solid transparent; border-radius: 6px; background: var(--field); min-height: 43px; padding: 8px 12px; font-size: 12px; cursor: pointer; text-overflow: ellipsis; }
+select { width: 100%; border: 1px solid var(--line); border-radius: 7px; background-color: var(--field); min-height: 40px; padding: 8px 30px 8px 12px; font-size: 12.5px; cursor: pointer; text-overflow: ellipsis; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23737b8c' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 4.5 6 7.5 9 4.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
 .conversion-section { padding: 25px 0 22px; border-bottom: 1px solid var(--line); }
 .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 h2 { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; }

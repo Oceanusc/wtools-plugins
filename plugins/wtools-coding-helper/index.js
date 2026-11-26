@@ -5,7 +5,7 @@
   const api = window.wtools;
   const tools = {
     base64: { title: "Base64", glyph: "64", category: "TEXT / ENCODING", description: "字符串与 Base64 互相转换，支持中文与 Emoji。", example: "你好，WTools 👋", fields: ["direction"], hint: "使用 UTF-8 字符编码；支持省略末尾补位的 Base64" },
-    image: { title: "图片 Base64", glyph: "▧", category: "IMAGE / BASE64", description: "图片转 Base64，或将 Base64 还原为可保存的图片。", fields: ["direction", "image-prefix"], hint: "支持 PNG、JPEG、GIF、WebP、BMP、ICO，最大 16 MiB" },
+    image: { title: "图片 Base64", glyph: "img", category: "IMAGE / BASE64", description: "图片转 Base64，或将 Base64 还原为可保存的图片。", fields: ["direction", "image-prefix"], hint: "支持 PNG、JPEG、GIF、WebP、BMP、ICO，最大 16 MiB" },
     date: { title: "时间转换", glyph: "ts", category: "DATE / TIMESTAMP", description: "时间戳、标准时间与 ISO 8601 格式互相转换。", example: "2026-11-24 12:00:00", fields: ["date-unit", "date-zone"], hint: "无时区的日期默认使用本地时区；自动单位按数值大小判断" },
     uuid: { title: "UUID / GUID", glyph: "id", category: "IDENTITY / UUID V4", description: "使用安全随机数，批量生成 UUID v4 唯一标识。", fields: ["uuid-count", "uuid-case", "uuid-style"], hint: "" },
     hash: { title: "Hash 摘要", glyph: "#", category: "DIGEST / CHECKSUM", description: "计算文本或文件的六种哈希摘要，内容始终留在本地。", example: "hello", fields: ["hash-source", "hash-algorithm"], hint: "Hash 为单向摘要，无法解密；文本按 UTF-8 原样计算，不去除空白" },
@@ -23,6 +23,8 @@
   };
   let tool = "base64", selectedFile = null, revision = 0, activeHash = null, imageUrl = null;
   let resultText = "", refillText = "", inputTimer = null;
+  const drafts = new Map();
+  const autoTools = new Set(["base64", "url", "unicode", "html", "radix", "date"]);
   function node(tag, className, text) {
     const element = document.createElement(tag);
     if (className) element.className = className;
@@ -80,20 +82,30 @@
     $("remove-file").hidden = !selectedFile;
     $("recognize").hidden = fileMode();
     $("clear").hidden = fileMode();
+    const divider = $("input-panel").querySelector(".bar-divider");
+    if (divider) divider.hidden = fileMode();
+    for (const button of document.querySelectorAll("#direction-segmented button")) {
+      button.setAttribute("aria-pressed", String(button.dataset.value === $("direction").value));
+    }
     $("run").textContent = { date: "转换时间", uuid: "生成 UUID", hash: "计算摘要", radix: "转换进制" }[tool] ?? ($("direction").value === "decode" ? "解码" : "编码");
     $("input").placeholder = tool === "date" ? "输入秒 / 毫秒时间戳，或 YYYY-MM-DD HH:mm:ss…" : tool === "image" ? "粘贴图片 Base64 或 data:image/…;base64,…" : "在此输入或粘贴内容…";
-    for (const button of $("tools").children) button.setAttribute("aria-pressed", String(button.dataset.tool === tool));
+    for (const button of document.querySelectorAll("#tools button[data-tool]")) button.setAttribute("aria-pressed", String(button.dataset.tool === tool));
     updateInputHint();
   }
   function selectTool(id, options = {}) {
     if (!tools[id]) return;
     showOptions(false);
+    clearTimeout(inputTimer);
+    if (!options.keepInput && tool !== id) drafts.set(tool, $("input").value);
     invalidate(); selectedFile = null; $("file").value = "";
     tool = id;
+    if (!options.keepInput) $("input").value = drafts.get(id) ?? "";
     if (options.action) $("direction").value = options.action;
     if (options.format) $("unicode-format").value = options.format;
     if (options.from) $("from-base").value = options.from;
-    renderControls(); notice("所有转换均在本地完成");
+    renderControls();
+    if ($("input").value.trim() && autoTools.has(tool)) run();
+    else notice("所有转换均在本地完成");
   }
   function formatSize(size) { return size < 1024 * 1024 ? `${(size / 1024).toFixed(1)} KiB` : `${(size / 1024 / 1024).toFixed(2)} MiB`; }
   async function copy(text) {
@@ -220,23 +232,44 @@
   function recognize() {
     const detected = C.detect($("input").value);
     if (!detected) { notice("未识别到已知格式，请手动选择工具。", true); return; }
-    selectTool(detected.tool, detected); run();
+    selectTool(detected.tool, { ...detected, keepInput: true }); run();
   }
-  for (const [id, config] of Object.entries(tools)) {
-    const button = node("button"); button.dataset.tool = id;
-    const glyph = node("span", "glyph", config.glyph); glyph.setAttribute("aria-hidden", "true");
-    button.append(glyph, node("span", "", config.title)); button.onclick = () => selectTool(id); $("tools").append(button);
+  const navGroups = [
+    ["编码转义", ["base64", "image", "url", "unicode", "html"]],
+    ["格式与时间", ["date", "radix"]],
+    ["摘要与标识", ["hash", "uuid"]]
+  ];
+  for (const [label, ids] of navGroups) {
+    $("tools").append(node("p", "nav-group", label));
+    for (const id of ids) {
+      const config = tools[id];
+      const button = node("button"); button.dataset.tool = id;
+      const glyph = node("span", "glyph", config.glyph); glyph.setAttribute("aria-hidden", "true");
+      button.append(glyph, node("span", "", config.title)); button.onclick = () => selectTool(id); $("tools").append(button);
+    }
   }
   $("run").onclick = run;
   $("cancel").onclick = () => { invalidate(); notice("已取消计算"); };
   $("recognize").onclick = recognize;
   $("input").oninput = () => {
-    invalidate(); clearTimeout(inputTimer); inputTimer = setTimeout(updateInputHint, 180); notice("输入已修改，点击按钮更新结果");
+    invalidate(); clearTimeout(inputTimer);
+    if (!$("input").value.trim()) { updateInputHint(); notice("所有转换均在本地完成"); return; }
+    if (autoTools.has(tool)) { inputTimer = setTimeout(() => { updateInputHint(); run(); }, 120); }
+    else { inputTimer = setTimeout(updateInputHint, 180); notice("输入已修改，点击按钮更新结果"); }
   };
+  for (const button of document.querySelectorAll("#direction-segmented button")) {
+    button.onclick = () => {
+      if ($("direction").value === button.dataset.value) return;
+      $("direction").value = button.dataset.value;
+      $("direction").dispatchEvent(new Event("change"));
+    };
+  }
   for (const field of document.querySelectorAll(".options input,.options select")) field.onchange = () => {
     invalidate();
     if (field.id === "hash-source") { selectedFile = null; $("file").value = ""; }
-    renderControls(); notice("选项已更新，点击按钮开始处理");
+    renderControls();
+    if ($("input").value.trim() && autoTools.has(tool)) run();
+    else notice("选项已更新，点击按钮开始处理");
   };
   $("now").onclick = () => { $("input").value = String(Date.now()); $("date-unit").value = "milliseconds"; updateInputHint(); run(); };
   $("clear").onclick = () => { invalidate(); $("input").value = ""; updateInputHint(); notice("已清空"); $("input").focus(); };
