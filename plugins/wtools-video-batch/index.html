@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob: data:; font-src 'self' blob: data:; connect-src 'self' blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>视频批量处理</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="vendor/jszip.min.js" defer></script>
+  <script src="index.js" type="module"></script>
+</head>
+<body>
+  <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-compress" viewBox="0 0 24 24"><path d="M4 12h16M12 3v6m-3-3 3 3 3-3M12 21v-6m-3 3 3-3 3 3"/></symbol>
+    <symbol id="i-trim" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12"/></symbol>
+    <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14"/></symbol>
+    <symbol id="i-convert" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-15.5-6.3M3 4v5h5M3 12a9 9 0 0 0 15.5 6.3M21 20v-5h-5"/></symbol>
+    <symbol id="i-gif" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M7 10a2 2 0 1 0 0 4h1v-2H7M12 10v4M15 14v-4h3m-3 2h2"/></symbol>
+    <symbol id="i-watermark" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 15h10M9 11l3-4 3 4"/></symbol>
+    <symbol id="i-resize" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v6H3M15 21v-6h6M14 10l5-5m-4 0h4v4"/></symbol>
+    <symbol id="i-cover" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m3 17 5-5 4 4 3-3 6 5"/></symbol>
+    <symbol id="i-speed" viewBox="0 0 24 24"><path d="m13 17 5-5-5-5M6 17l5-5-5-5"/></symbol>
+    <symbol id="i-flip" viewBox="0 0 24 24"><path d="M12 3v18M8 7l-5 5 5 5V7ZM16 7l5 5-5 5V7Z"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol>
+    <symbol id="i-merge" viewBox="0 0 24 24"><path d="M12 3v12m0 0-5 5m5-5 5 5M5 5h14"/></symbol>
+    <symbol id="i-audio" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+    <symbol id="i-frames" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 12h18M3 7.5h4M3 16.5h4M17 7.5h4M17 16.5h4"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="m9 3-1 3-3 1-2 5 2 5 3 1 1 3h6l1-3 3-1 2-5-2-5-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-add-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M12 18v-6m-3 3h6"/></symbol>
+    <symbol id="i-clear" viewBox="0 0 24 24"><path d="M4 7h16M6 12h12M8 17h8"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="m3 3 18 9-18 9 4-9-4-9Zm4 9h14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4V8Z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v3h16v-3"/></symbol>
+    <symbol id="i-video-badge" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3V9Z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor" stroke="none"/></symbol>
+  </svg>
+
+  <div class="app-shell" id="app-shell">
+    <!-- Left Sidebar -->
+    <aside class="sidebar" aria-label="功能导航">
+      <nav class="nav-list" id="nav-list">
+        <button class="nav-item active" data-mode="compress" title="视频压缩"><svg class="icon"><use href="#i-compress"/></svg><span>视频压缩</span></button>
+        <button class="nav-item" data-mode="trim" title="时长裁剪"><svg class="icon"><use href="#i-trim"/></svg><span>时长裁剪</span></button>
+        <button class="nav-item" data-mode="crop" title="画面裁剪"><svg class="icon"><use href="#i-crop"/></svg><span>画面裁剪</span></button>
+        <button class="nav-item" data-mode="convert" title="格式转换"><svg class="icon"><use href="#i-convert"/></svg><span>格式转换</span></button>
+        <button class="nav-item" data-mode="animated" title="转为动图"><svg class="icon"><use href="#i-gif"/></svg><span>转为动图</span></button>
+        <button class="nav-item" data-mode="watermark" title="添加水印"><svg class="icon"><use href="#i-watermark"/></svg><span>添加水印</span></button>
+        <button class="nav-item" data-mode="resize" title="修改尺寸"><svg class="icon"><use href="#i-resize"/></svg><span>修改尺寸</span></button>
+        <button class="nav-item" data-mode="cover" title="视频封面"><svg class="icon"><use href="#i-cover"/></svg><span>视频封面</span></button>
+        <button class="nav-item" data-mode="speed" title="视频加速"><svg class="icon"><use href="#i-speed"/></svg><span>视频加速</span></button>
+        <button class="nav-item" data-mode="flip" title="视频翻转"><svg class="icon"><use href="#i-flip"/></svg><span>视频翻转</span></button>
+        <button class="nav-item" data-mode="rotate" title="视频旋转"><svg class="icon"><use href="#i-rotate"/></svg><span>视频旋转</span></button>
+        <button class="nav-item" data-mode="merge" title="视频合并"><svg class="icon"><use href="#i-merge"/></svg><span>视频合并</span></button>
+        <button class="nav-item" data-mode="audio" title="音频处理"><svg class="icon"><use href="#i-audio"/></svg><span>音频处理</span></button>
+        <button class="nav-item" data-mode="frames" title="帧提取"><svg class="icon"><use href="#i-frames"/></svg><span>帧提取</span></button>
+      </nav>
+    </aside>
+
+    <!-- Main Editor -->
+    <main class="main-editor" id="main-editor">
+      <!-- Middle Parameters Panel -->
+      <section class="params-panel" id="params-panel" aria-label="参数设置">
+        <div class="params-scroll">
+          <!-- 1. 视频压缩 -->
+          <div class="option-group" data-options="compress">
+            <div class="field-block">
+              <label>视频编码</label>
+              <div class="segmented" id="compress-codec-group" role="group" aria-label="视频编码">
+                <button type="button" data-codec="h264" aria-pressed="true">H.264</button>
+                <button type="button" data-codec="h265" aria-pressed="false">H.265</button>
+                <button type="button" data-codec="av1" aria-pressed="false">AV1</button>
+              </div>
+              <p class="field-hint" id="compress-codec-hint" hidden>当前离线内核暂不支持 AV1 编码，请使用 H.264 或 H.265</p>
+            </div>
+            <div class="field-block">
+              <div class="field-head">
+                <label for="compress-crf">视频质量（CRF 值）</label>
+                <span class="badge-value" id="compress-crf-badge">30</span>
+              </div>
+              <input id="compress-crf" type="range" min="18" max="45" value="30">
+              <div class="range-labels">
+                <span>&lt; 质量损失小</span>
+                <span>质量损失大 &gt;</span>
+              </div>
+            </div>
+            <p class="field-hint">仅支持 MP4 视频压缩；CRF 越大体积越小。</p>
+          </div>
+
+          <!-- 2. 时长裁剪 -->
+          <div class="option-group" data-options="trim" hidden>
+            <div class="field-block">
+              <div class="vertical-group" id="trim-mode-group" role="radiogroup" aria-label="时长裁剪方式">
+                <button type="button" class="v-btn" data-trim="head" aria-pressed="false">剪掉片头</button>
+                <button type="button" class="v-btn" data-trim="tail" aria-pressed="false">剪掉片尾</button>
+                <button type="button" class="v-btn" data-trim="range" aria-pressed="false">区间截取</button>
+                <button type="button" class="v-btn" data-trim="segment" aria-pressed="true">片段裁剪</button>
+              </div>
+            </div>
+            <div class="two-col" id="trim-inputs-head" hidden>
+              <div class="field-block">
+                <label for="trim-head-dur">剪掉片头时长</label>
+                <div class="underline-input"><input id="trim-head-dur" type="text" value="00:00:05" placeholder="00:00:00"></div>
+                <span class="time-sub">时 : 分 : 秒</span>
+              </div>
+            </div>
+            <div class="two-col" id="trim-inputs-tail" hidden>
+              <div class="field-block">
+                <label for="trim-tail-dur">剪掉片尾时长</label>
+                <div class="underline-input"><input id="trim-tail-dur" type="text" value="00:00:05" placeholder="00:00:00"></div>
+                <span class="time-sub">时 : 分 : 秒</span>
+              </div>
+            </div>
+            <div class="two-col" id="trim-inputs-range" hidden>
+              <div class="field-block">
+                <label for="trim-range-start">开始时间</label>
+                <div class="underline-input"><input id="trim-range-start" type="text" value="00:00:00" placeholder="00:00:00"></div>
+                <span class="time-sub">时 : 分 : 秒</span>
+              </div>
+              <div class="field-block">
+                <label for="trim-range-end">结束时间</label>
+                <div class="underline-input"><input id="trim-range-end" type="text" value="00:00:10" placeholder="00:00:00"></div>
+                <span class="time-sub">时 : 分 : 秒</span>
+              </div>
+            </div>
+            <div class="two-col" id="trim-inputs-segment">
+              <div class="field-block">
+                <label for="trim-seg-start">开始位置</label>
+                <div class="underline-input"><input id="trim-seg-start" type="text" value="00:00:00" placeholder="00:00:00"></div>
+                <span class="time-sub">时 : 分 : 秒</span>
+              </div>
+              <div class="field-block">
+                <label for="trim-seg-dur">片段时长</label>
+                <div class="underline-input"><input id="trim-seg-dur" type="text" value="00:00:10" placeholder="00:00:00"></div>
+                <span class="time-sub">时 : 分 : 秒</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. 画面裁剪 -->
+          <div class="option-group" data-options="crop" hidden>
+            <div class="field-block">
+              <label>裁剪比例</label>
+              <div class="ratio-grid" id="crop-ratio-grid" role="radiogroup" aria-label="画面裁剪比例">
+                <button type="button" class="format-btn active" data-ratio="16:9">16:9</button>
+                <button type="button" class="format-btn" data-ratio="4:3">4:3</button>
+                <button type="button" class="format-btn" data-ratio="3:2">3:2</button>
+                <button type="button" class="format-btn" data-ratio="5:4">5:4</button>
+                <button type="button" class="format-btn" data-ratio="1:1">1:1</button>
+              </div>
+            </div>
+            <div class="field-block">
+              <label for="crop-anchor">裁剪对齐</label>
+              <select id="crop-anchor">
+                <option value="center" selected>居中裁剪</option>
+                <option value="top">靠上 / 靠左</option>
+                <option value="bottom">靠下 / 靠右</option>
+              </select>
+            </div>
+            <p class="field-hint">按选定比例自动计算最大内接画面区域并输出偶数分辨率。</p>
+          </div>
+
+          <!-- 4. 格式转换 -->
+          <div class="option-group" data-options="convert" hidden>
+            <div class="field-block">
+              <label>目标格式</label>
+              <div class="vertical-group" id="convert-format-group" role="radiogroup" aria-label="目标视频格式">
+                <button type="button" class="v-btn" data-format="mp4" aria-pressed="true">MP4</button>
+                <button type="button" class="v-btn" data-format="avi" aria-pressed="false">AVI</button>
+                <button type="button" class="v-btn" data-format="flv" aria-pressed="false">FLV</button>
+                <button type="button" class="v-btn" data-format="mkv" aria-pressed="false">MKV</button>
+                <button type="button" class="v-btn" data-format="mov" aria-pressed="false">MOV</button>
+                <button type="button" class="v-btn" data-format="wmv" aria-pressed="false">WMV</button>
+                <button type="button" class="v-btn" data-format="webm" aria-pressed="false">WebM(VP9)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. 转为动图 -->
+          <div class="option-group" data-options="animated" hidden>
+            <div class="field-block">
+              <label>动图格式</label>
+              <div class="segmented" id="anim-format-group" role="group" aria-label="动图格式">
+                <button type="button" data-anim="gif" aria-pressed="true">GIF</button>
+                <button type="button" data-anim="webp" aria-pressed="false">WebP</button>
+              </div>
+            </div>
+            <div class="field-block">
+              <label for="anim-fps">每秒帧数</label>
+              <div class="underline-input">
+                <input id="anim-fps" type="number" min="1" max="30" value="10">
+                <span class="unit">帧</span>
+              </div>
+            </div>
+            <div class="field-block">
+              <label for="anim-width">动图宽度</label>
+              <div class="underline-input">
+                <input id="anim-width" type="number" min="48" max="1920" placeholder="留空使用原宽">
+                <span class="unit">px</span>
+              </div>
+              <p class="field-hint">留空则默认使用视频原始尺寸</p>
+            </div>
+            <label class="checkbox-row">
+              <input id="anim-loop" type="checkbox" checked>
+              <span>动图循环播放</span>
+            </label>
+          </div>
+
+          <!-- 6. 添加水印 -->
+          <div class="option-group" data-options="watermark" hidden>
+            <div class="field-block">
+              <label>水印模式</label>
+              <div class="segmented" id="wm-mode-group" role="group" aria-label="水印模式">
+                <button type="button" data-wm-mode="fixed" aria-pressed="true">固定位置</button>
+                <button type="button" data-wm-mode="dynamic" aria-pressed="false">动态水印</button>
+                <button type="button" data-wm-mode="tile" aria-pressed="false">平铺水印</button>
+              </div>
+            </div>
+            <div class="field-block">
+              <label>水印类型</label>
+              <div class="segmented" id="wm-type-group" role="group" aria-label="水印类型">
+                <button type="button" data-wm-type="text" aria-pressed="true">文字水印</button>
+                <button type="button" data-wm-type="image" aria-pressed="false">图片水印</button>
+              </div>
+            </div>
+            <div id="wm-text-fields" class="option-group">
+              <div class="field-block">
+                <label for="wm-text">水印文字</label>
+                <input id="wm-text" type="text" value="WTools" maxlength="60" placeholder="输入水印文字">
+              </div>
+              <div class="two-col">
+                <div class="field-block">
+                  <label for="wm-size">字号 (px)</label>
+                  <input id="wm-size" type="number" min="12" max="144" value="28">
+                </div>
+                <div class="field-block">
+                  <label for="wm-color">颜色</label>
+                  <input id="wm-color" type="color" value="#ffffff">
+                </div>
+              </div>
+            </div>
+            <div id="wm-image-fields" class="option-group" hidden>
+              <div class="field-block">
+                <label>水印图片</label>
+                <div class="file-pick-row">
+                  <button type="button" class="btn-outline" id="wm-pick-btn">选择图片</button>
+                  <span class="pick-name" id="wm-pick-name">未选择图片</span>
+                </div>
+                <input id="wm-image-input" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+              </div>
+              <div class="field-block">
+                <div class="field-head">
+                  <label for="wm-img-scale">图片宽度占比</label>
+                  <span class="badge-value" id="wm-img-scale-badge">20%</span>
+                </div>
+                <input id="wm-img-scale" type="range" min="5" max="60" value="20">
+              </div>
+            </div>
+            <div class="field-block">
+              <div class="field-head">
+                <label for="wm-opacity">不透明度</label>
+                <span class="badge-value" id="wm-opacity-badge">75%</span>
+              </div>
+              <input id="wm-opacity" type="range" min="10" max="100" value="75">
+            </div>
+            <div id="wm-pos-wrap" class="field-block">
+              <label>水印位置</label>
+              <div class="pos-grid" id="wm-pos-grid">
+                <button type="button" data-pos="tl">左上</button>
+                <button type="button" data-pos="tc">上中</button>
+                <button type="button" data-pos="tr">右上</button>
+                <button type="button" data-pos="ml">左中</button>
+                <button type="button" data-pos="mc">居中</button>
+                <button type="button" data-pos="mr">右中</button>
+                <button type="button" data-pos="bl">左下</button>
+                <button type="button" data-pos="bc">下中</button>
+                <button type="button" class="active" data-pos="br">右下</button>
+              </div>
+            </div>
+            <div id="wm-margin-wrap" class="field-block">
+              <label for="wm-margin">边距 (px)</label>
+              <input id="wm-margin" type="number" min="0" max="200" value="24">
+            </div>
+            <div id="wm-dynamic-wrap" class="field-block" hidden>
+              <label for="wm-speed">移动速度</label>
+              <select id="wm-speed">
+                <option value="slow">慢速游走</option>
+                <option value="medium" selected>中速游走</option>
+                <option value="fast">快速游走</option>
+              </select>
+            </div>
+            <div id="wm-tile-wrap" class="two-col" hidden>
+              <div class="field-block">
+                <label for="wm-tile-gap">平铺间距 (px)</label>
+                <input id="wm-tile-gap" type="number" min="40" max="400" value="140">
+              </div>
+              <div class="field-block">
+                <label for="wm-tile-angle">倾斜角度 (°)</label>
+                <input id="wm-tile-angle" type="number" min="-90" max="90" value="-25">
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. 修改尺寸 -->
+          <div class="option-group" data-options="resize" hidden>
+            <div class="two-col">
+              <div class="field-block">
+                <label for="resize-width">目标宽度</label>
+                <div class="underline-input">
+                  <input id="resize-width" type="number" min="16" max="7680" placeholder="自动">
+                  <span class="unit">px</span>
+                </div>
+              </div>
+              <div class="field-block">
+                <label for="resize-height">目标高度</label>
+                <div class="underline-input">
+                  <input id="resize-height" type="number" min="16" max="4320" placeholder="自动">
+                  <span class="unit">px</span>
+                </div>
+              </div>
+            </div>
+            <div class="field-block">
+              <label>常用预设</label>
+              <div class="quick-btns" id="resize-presets">
+                <button type="button" class="btn-outline" data-w="1920" data-h="">1080P</button>
+                <button type="button" class="btn-outline" data-w="1280" data-h="">720P</button>
+                <button type="button" class="btn-outline" data-w="854" data-h="">480P</button>
+                <button type="button" class="btn-outline" data-w="640" data-h="">640px</button>
+              </div>
+            </div>
+            <p class="field-hint">只填宽度或高度时按原比例缩放；同时填写将按指定尺寸输出（自动对齐为偶数）。</p>
+          </div>
+
+          <!-- 8. 视频封面 -->
+          <div class="option-group" data-options="cover" hidden>
+            <div class="field-block">
+              <label>选择封面图片</label>
+              <div class="file-pick-row">
+                <button type="button" class="btn-outline" id="cover-pick-btn">选择图片</button>
+                <span class="pick-name" id="cover-pick-name">未选择图片</span>
+              </div>
+              <input id="cover-input" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+            </div>
+            <div class="cover-preview-box" id="cover-preview-box" hidden>
+              <img id="cover-preview-img" alt="封面预览">
+            </div>
+            <p class="field-hint">将所选图片写入视频封面流（支持 MP4 / MKV / MOV，无需重编码视频流）。</p>
+          </div>
+
+          <!-- 9. 视频加速 -->
+          <div class="option-group" data-options="speed" hidden>
+            <div class="field-block">
+              <div class="field-head">
+                <label for="speed-rate">播放倍速</label>
+                <span class="badge-value" id="speed-rate-badge">2.0x</span>
+              </div>
+              <input id="speed-rate" type="range" min="0.25" max="4" step="0.25" value="2">
+              <div class="quick-btns" id="speed-presets">
+                <button type="button" class="btn-outline" data-speed="0.5">0.5x</button>
+                <button type="button" class="btn-outline" data-speed="1.5">1.5x</button>
+                <button type="button" class="btn-outline" data-speed="2">2.0x</button>
+                <button type="button" class="btn-outline" data-speed="3">3.0x</button>
+              </div>
+            </div>
+            <label class="checkbox-row">
+              <input id="speed-audio" type="checkbox" checked>
+              <span>音频同步变速</span>
+            </label>
+            <p class="field-hint">关闭“音频同步变速”将保留原声或静音处理，推荐保持开启。</p>
+          </div>
+
+          <!-- 10. 视频翻转 -->
+          <div class="option-group" data-options="flip" hidden>
+            <div class="field-block">
+              <label>翻转方向</label>
+              <div class="vertical-group" id="flip-mode-group" role="radiogroup" aria-label="翻转方向">
+                <button type="button" class="v-btn" data-flip="h" aria-pressed="true">左右翻转（水平镜像）</button>
+                <button type="button" class="v-btn" data-flip="v" aria-pressed="false">上下翻转（垂直镜像）</button>
+                <button type="button" class="v-btn" data-flip="hv" aria-pressed="false">水平 + 垂直翻转</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 11. 视频旋转 -->
+          <div class="option-group" data-options="rotate" hidden>
+            <div class="field-block">
+              <div class="field-head">
+                <label for="rotate-angle">旋转角度</label>
+                <span class="badge-value" id="rotate-angle-badge">90°</span>
+              </div>
+              <input id="rotate-angle" type="range" min="0" max="360" step="1" value="90">
+              <div class="quick-btns" id="rotate-presets">
+                <button type="button" class="btn-outline" data-deg="90">90°</button>
+                <button type="button" class="btn-outline" data-deg="180">180°</button>
+                <button type="button" class="btn-outline" data-deg="270">270°</button>
+                <button type="button" class="btn-outline" data-deg="45">45°</button>
+              </div>
+            </div>
+            <div class="field-block">
+              <label for="rotate-exact">精确角度 (°)</label>
+              <input id="rotate-exact" type="number" min="-360" max="360" value="90">
+            </div>
+            <p class="field-hint">支持任意角度旋转；90°/180°/270° 自动无裁切旋转，其他角度保留画幅并填充黑边。</p>
+          </div>
+
+          <!-- 12. 视频合并 -->
+          <div class="option-group" data-options="merge" hidden>
+            <div class="field-block">
+              <label>合并方式</label>
+              <div class="vertical-group" id="merge-mode-group" role="radiogroup" aria-label="合并方式">
+                <button type="button" class="v-btn" data-merge="head" aria-pressed="false">添加到片头</button>
+                <button type="button" class="v-btn" data-merge="tail" aria-pressed="true">添加到片尾</button>
+                <button type="button" class="v-btn" data-merge="queue" aria-pressed="false">队列全部合并为一个</button>
+              </div>
+            </div>
+            <div class="field-block" id="merge-extra-wrap">
+              <label id="merge-extra-label">选择片尾视频</label>
+              <div class="file-pick-row">
+                <button type="button" class="btn-outline" id="merge-pick-btn">选择视频</button>
+                <span class="pick-name" id="merge-pick-name">未选择视频</span>
+              </div>
+              <input id="merge-extra-input" type="file" accept="video/*,.mp4,.mov,.mkv,.avi,.flv,.wmv,.webm" hidden>
+            </div>
+            <p class="field-hint">相同格式和编码的视频将尝试无损快速拼接；参数不一致时自动转码适配。</p>
+          </div>
+
+          <!-- 13. 音频处理 -->
+          <div class="option-group" data-options="audio" hidden>
+            <div class="field-block">
+              <label>处理方式</label>
+              <div class="segmented" id="audio-mode-group" role="group" aria-label="音频处理方式">
+                <button type="button" data-audio="mute" aria-pressed="true">删除音频</button>
+                <button type="button" data-audio="extract" aria-pressed="false">提取音频</button>
+              </div>
+            </div>
+            <div class="field-block" id="audio-format-wrap" hidden>
+              <label>音频格式</label>
+              <div class="format-grid" id="audio-format-grid">
+                <button type="button" class="format-btn active" data-aformat="mp3">MP3</button>
+                <button type="button" class="format-btn" data-aformat="aac">AAC</button>
+                <button type="button" class="format-btn" data-aformat="wav">WAV</button>
+              </div>
+            </div>
+            <p class="field-hint">删除音频仅移除音轨，画面无损极速导出；提取音频可导出独立音频文件。</p>
+          </div>
+
+          <!-- 14. 帧提取 -->
+          <div class="option-group" data-options="frames" hidden>
+            <div class="field-block">
+              <label for="frames-interval">采样间隔（秒/帧）</label>
+              <div class="underline-input">
+                <input id="frames-interval" type="number" min="0.1" max="3600" step="0.5" value="1">
+                <span class="unit">秒</span>
+              </div>
+              <p class="field-hint">例如填 1 表示每秒提取 1 帧，填 0.5 表示每秒提取 2 帧</p>
+            </div>
+            <div class="field-block">
+              <label>输出图片格式</label>
+              <div class="segmented" id="frames-format-group" role="group" aria-label="帧图片格式">
+                <button type="button" data-fformat="jpg" aria-pressed="true">JPG</button>
+                <button type="button" data-fformat="png" aria-pressed="false">PNG</button>
+              </div>
+            </div>
+            <div class="field-block">
+              <label for="frames-width">输出宽度</label>
+              <div class="underline-input">
+                <input id="frames-width" type="number" min="32" max="3840" placeholder="留空保持原尺寸">
+                <span class="unit">px</span>
+              </div>
+            </div>
+            <p class="field-hint">提取的帧图片将打包为 ZIP 文件下载。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Queue Panel -->
+      <section class="queue-panel" id="queue-panel" aria-label="待处理视频队列">
+        <!-- Empty State -->
+        <div class="empty-dropzone" id="empty-dropzone">
+          <div class="drop-card" id="drop-card">
+            <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="18" height="14" rx="3"/>
+              <path d="m10 9 5 3-5 3V9Z"/>
+            </svg>
+            <h3>拖入视频或点击添加</h3>
+            <p>支持 MP4、MOV、MKV、AVI、FLV、WMV、WebM 等常见格式<br>全部处理在本地离线完成，不上传任何文件</p>
+            <button type="button" class="btn-primary" id="empty-add-btn">选择视频文件</button>
+          </div>
+        </div>
+
+        <!-- Card Queue -->
+        <div class="queue-scroll" id="queue-scroll" hidden>
+          <ul class="file-list" id="file-list"></ul>
+        </div>
+
+        <!-- Drag Overlay -->
+        <div class="drop-overlay" id="drop-overlay" hidden>
+          <svg class="icon"><use href="#i-add-file"/></svg>
+          <span>释放以添加到处理队列</span>
+        </div>
+
+        <!-- Bottom Toolbar -->
+        <footer class="bottom-bar">
+          <div class="bottom-tools">
+            <button type="button" class="tool-icon-btn" id="settings-btn" title="设置与说明" aria-label="设置与说明">
+              <svg class="icon"><use href="#i-settings"/></svg>
+            </button>
+            <button type="button" class="tool-icon-btn" id="add-btn" title="添加视频 (Ctrl+O)" aria-label="添加视频">
+              <svg class="icon"><use href="#i-add-file"/></svg>
+            </button>
+            <button type="button" class="tool-icon-btn" id="clear-btn" title="清空列表" aria-label="清空列表">
+              <svg class="icon"><use href="#i-clear"/></svg>
+            </button>
+          </div>
+          <div class="bottom-actions">
+            <button type="button" class="btn-outline" id="download-all-btn" hidden>
+              <svg class="icon"><use href="#i-download"/></svg>
+              <span>打包下载</span>
+            </button>
+            <button type="button" class="btn-primary start-btn" id="start-btn" disabled>
+              <span id="start-btn-text">开始处理 (0)</span>
+              <svg class="icon"><use href="#i-send"/></svg>
+            </button>
+          </div>
+        </footer>
+      </section>
+    </main>
+  </div>
+
+  <!-- Video Preview Dialog -->
+  <dialog id="preview-dialog" aria-labelledby="preview-title">
+    <div class="dialog-head">
+      <h2 id="preview-title">视频预览</h2>
+      <button type="button" class="tool-icon-btn" id="preview-close" aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="preview-video-wrap">
+      <video id="preview-video" controls playsinline></video>
+      <div class="preview-status" id="preview-status" hidden>正在转换预览格式，请稍候...</div>
+    </div>
+  </dialog>
+
+  <!-- Settings Dialog -->
+  <dialog id="settings-dialog" aria-labelledby="settings-title">
+    <div class="dialog-head">
+      <h2 id="settings-title">设置与说明</h2>
+      <button type="button" class="tool-icon-btn" id="settings-close" aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="settings-body">
+      <div class="setting-row">
+        <label for="theme-select">界面主题</label>
+        <select id="theme-select">
+          <option value="auto">跟随系统</option>
+          <option value="light">浅色</option>
+          <option value="dark">深色</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <label for="auto-download">完成后自动下载</label>
+        <input id="auto-download" type="checkbox">
+      </div>
+      <div class="setting-row">
+        <label>保存目录</label>
+        <div class="dir-pick-row">
+          <span class="pick-name" id="save-dir-name">默认下载目录</span>
+          <button type="button" class="btn-outline" id="pick-dir-btn">选择目录</button>
+          <button type="button" class="btn-outline" id="clear-dir-btn" hidden>恢复默认</button>
+        </div>
+      </div>
+      <p class="settings-note">
+        1. 本插件基于内置 FFmpeg WebAssembly 在本地离线运行，不会上传您的视频。<br>
+        2. 单文件建议不超过 500 MB；较长视频的转码需要一定时间，可在卡片上点击红色停止按钮中止当前任务。<br>
+        3. 快捷键：Ctrl+O 添加视频，Ctrl+Enter 开始处理。
+      </p>
+    </div>
+  </dialog>
+
+  <input id="file-input" type="file" accept="video/*,.mp4,.mov,.mkv,.avi,.flv,.wmv,.webm,.m4v,.ts" multiple hidden>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
