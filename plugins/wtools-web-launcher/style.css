@@ -16,21 +16,16 @@ header, .tabs, footer, #status { flex-shrink: 0; }
 dialog { overflow: auto; }
 .dialog-actions { flex-wrap: wrap; }
 @media (max-width: 800px), (max-height: 650px) {
-  header { padding: 12px 18px; gap: 12px; }
-  .brand img { width: 32px; height: 32px; }
-  h1 { font-size: 16px; }
-  .tabs { gap: 16px; padding-inline: 18px; }
-  .tabs button { padding-block: 9px; }
-  aside { width: 156px; padding: 14px 8px; }
+  .tabs { gap: 16px; padding-inline: 16px; }
+  aside { width: 178px; padding: 14px 8px; }
   .section-label { padding: 0 8px 8px; }
-  #categories button, #builtin { padding: 9px 8px; }
+  #categories button, #builtin { padding: 9px 10px; }
   .category-tools { padding-block: 8px 14px; }
-  .aside-note { padding-top: 14px; }
-  main { padding: 16px 18px; }
-  .entry { gap: 10px; padding-block: 13px; }
-  .entry-icon { width: 34px; height: 34px; font-size: 16px; }
+  main { padding: 18px 20px; }
+  .entry { gap: 12px; padding-block: 13px; }
+  .entry-icon { width: 36px; height: 36px; font-size: 16px; }
   footer { padding: 10px 16px; }
-  #empty { padding-block: 24px; }
+  #empty { padding-block: 28px; }
 }
 @media (max-width: 520px) {
   header { padding: 9px 12px; gap: 8px; }

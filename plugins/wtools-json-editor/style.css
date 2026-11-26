@@ -11,21 +11,12 @@ html, body { width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: h
 .filter-panel { max-height: 40%; overflow: auto; }
 .header-actions, .toolbar-end, .tool-group { flex-wrap: wrap; }
 @media (max-width: 800px) {
-  body { padding-inline: 12px; }
-  .app-header { padding-block: 10px; }
-  .brand { gap: 8px; min-width: 0; }
-  .brand-icon { width: 32px; height: 32px; font-size: 19px; flex-shrink: 0; }
-  h1 { font-size: 16px; }
-  .local-badge { display: none; }
-  .toolbar { gap: 5px; padding: 6px; margin-bottom: 8px; }
-  .toolbar-end { gap: 6px; }
-  .tool-group button { padding: 5px 6px; }
-  .filter-panel { margin-top: 8px; padding: 8px 10px; }
-  .filter-heading { margin-bottom: 6px; }
-  .filter-hint { margin-top: 6px; flex-wrap: wrap; }
-  .pane-header { height: auto; min-height: 36px; padding: 5px 8px; flex-wrap: wrap; }
-  .pane-footer { min-height: 24px; padding: 5px 8px; gap: 5px; }
-  .app-footer { padding-block: 7px; }
+  .toolbar { gap: 4px; padding: 5px 10px; }
+  .toolbar-end { gap: 8px; }
+  .tool-group button { padding: 5px 7px; }
+  .filter-panel { padding: 6px 10px; }
+  .pane-header { height: 34px; padding: 0 10px; }
+  .pane-footer { min-height: 24px; padding: 4px 10px; gap: 5px; }
 }
 @media (max-width: 580px) {
   .brand p, .brand-icon, .toolbar .divider, .tool-label, .pane-header .tag { display: none; }

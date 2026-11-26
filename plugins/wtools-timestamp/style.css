@@ -158,9 +158,8 @@ body { display: flex; flex-direction: column; }
 .footer, .settings-header, .settings-footer { flex-shrink: 0; }
 .zone-list { max-height: none; overflow: visible; }
 @media (max-height: 650px) {
-  .header { padding: 10px 18px; }
-  .workspace { padding-inline: 18px; }
-  .converter { padding: 14px 18px; }
+  .workspace { padding-inline: 0; }
+  .converter { padding: 16px 24px; }
   .options { gap: 10px; padding-bottom: 12px; }
   .unit-switch button { padding: 6px 10px; min-width: 68px; }
   select { min-height: 36px; }
