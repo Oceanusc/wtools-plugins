@@ -12,9 +12,9 @@
 <body>
   <header class="app-header"><div class="brand"><img src="./logo.svg" alt="" width="32" height="32"><h1>编码小助手</h1><span class="offline">本地处理</span></div><button id="theme" aria-label="切换颜色主题">主题：跟随系统</button></header>
   <div class="workspace">
-    <aside><nav id="tools" aria-label="编码工具"></nav><div class="sidebar-note">常用转换，触手可及。<br><span>Ctrl + Enter 执行</span></div></aside>
+    <aside><nav id="tools" aria-label="编码工具"></nav></aside>
     <main>
-      <div class="heading"><div><p class="eyebrow" id="tool-category">TEXT / ENCODING</p><h2 id="tool-title">Base64</h2><p id="tool-description">字符串与 Base64 互相转换，支持中文与 Emoji。</p></div><button id="example">填入示例</button><button id="toggle-options" aria-controls="options" aria-expanded="false">选项 ▾</button></div>
+      <div class="heading"><div><h2 id="tool-title">Base64</h2><p id="tool-description">字符串与 Base64 互相转换，支持中文与 Emoji。</p></div><button id="example">填入示例</button><button id="toggle-options" aria-controls="options" aria-expanded="false">选项 ▾</button></div>
       <div id="options" class="options">
         <label id="direction-field">操作<select id="direction"><option value="encode">编码</option><option value="decode">解码</option></select></label>
         <label id="url-mode-field" hidden>编码范围<select id="url-mode"><option value="component">URL 参数（encodeURIComponent）</option><option value="uri">完整 URL（encodeURI）</option></select></label>

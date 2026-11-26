@@ -70,7 +70,6 @@
   function renderControls() {
     const config = tools[tool];
     document.body.classList.toggle("uuid-mode", tool === "uuid");
-    $("tool-category").textContent = config.category;
     $("tool-title").textContent = config.title;
     $("tool-description").textContent = config.description;
     for (const field of document.querySelectorAll(".options > label")) field.hidden = !config.fields.includes(field.id.replace(/-field$/, ""));

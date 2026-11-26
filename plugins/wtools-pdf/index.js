@@ -91,7 +91,6 @@ function switchMode(mode) {
   state.mode = mode; clearOutputs();
   $('workspace').classList.toggle('watermark', mode === 'watermark');
   $('tool-title').textContent = tools[mode][0]; $('tool-description').textContent = tools[mode][1];
-  $('tool-index').textContent = `${String(Object.keys(tools).indexOf(mode) + 1).padStart(2, '0')} / 09`;
   document.querySelectorAll('[data-mode]').forEach(node => {
     node.classList.toggle('active', node.dataset.mode === mode);
     if (node.dataset.mode === mode) node.setAttribute('aria-current', 'page'); else node.removeAttribute('aria-current');
