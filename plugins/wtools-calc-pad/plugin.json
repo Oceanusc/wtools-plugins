@@ -1,0 +1,23 @@
+{
+  "name": "wtools-calc-pad",
+  "title": "计算稿纸",
+  "description": "高效简洁的计算工具，实时计算、自动保存，像稿纸一样记录每一步过程，支持回车带入结果、行内备注与多稿纸管理。",
+  "version": "1.0.0",
+  "author": "WTools",
+  "main": "index.html",
+  "logo": "logo.svg",
+  "platform": ["win32"],
+  "pluginSetting": {
+    "width": 760,
+    "height": 570,
+    "minWidth": 410,
+    "minHeight": 300
+  },
+  "features": [
+    {
+      "code": "calc-pad",
+      "explain": "高效简洁的计算稿纸，实时计算并自动保存每一步过程",
+      "cmds": ["计算稿纸", "稿纸", "计算器", "calc", "calculator", "jsq"]
+    }
+  ]
+}
