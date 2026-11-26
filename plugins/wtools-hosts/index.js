@@ -25,14 +25,7 @@ const editor = CodeMirror.fromTextArea($('content'), {
 editor.getInputField().setAttribute('aria-label', 'hosts 内容');
 CodeMirror.commands.save = () => save();
 CodeMirror.Vim.defineEx('write', 'w', () => save());
-function position() {
-  const p = editor.getCursor();
-  $('cursor').textContent = `行 ${p.line + 1}，列 ${p.ch + 1}`;
-  $('line-count').textContent = `${editor.lineCount()} 行`;
-}
-editor.on('cursorActivity', position);
-editor.on('vim-mode-change', event => { $('vim-state').textContent = `VIM · ${event.mode.toUpperCase()}`; });
-$('vim-state').hidden = !$('vim').checked;
+function position() {}
 new ResizeObserver(() => editor.refresh()).observe($('editor-container'));
 function message(text, error = false, target = $('status')) {
   target.textContent = text; target.toggleAttribute('data-error', error);
@@ -47,12 +40,7 @@ async function request(op, payload = {}) {
 const snapshot = () => JSON.stringify(workspace);
 function renderSummary() {
   if (!workspace) return;
-  const enabled = workspace.profiles.filter(p => p.enabled);
-  $('merge-title').textContent = enabled.length ? `公共配置 + ${enabled.length} 个方案` : '仅公共配置';
-  $('merge-description').textContent = enabled.length ? enabled.map(p => p.name).join('、') : '所有方案均未启用，将仅写入公共配置';
-  $('merge-description').title = $('merge-description').textContent;
   $('dirty').hidden = snapshot() === saved;
-  $('applied-state').textContent = !applied ? '尚未在本次会话应用' : applied === snapshot() ? '✓ 已应用当前配置' : '配置已更改，待应用';
 }
 function controls() {
   const disabled = !workspace || busy;
@@ -107,7 +95,6 @@ function select(index) {
   const profile = workspace.profiles[index], system = index === -2;
   const title = system ? '系统 hosts' : profile?.name ?? '公共配置';
   $('editor-title').textContent = title;
-  $('editor-description').textContent = system ? '当前系统实际生效的内容，可重新读取以查看外部修改。' : profile ? '独立的 hosts 片段。勾选启用后，与公共配置合并。' : '首次使用时读取系统 hosts，作为所有方案的基础。';
   $('readonly').hidden = !system; $('refresh').hidden = !system;
   $('more').hidden = !profile;
   let doc = documents.get(system ? 'system' : profile ?? 'public');
@@ -244,7 +231,7 @@ document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click
 $('review').addEventListener('cancel', e => { if (busy) e.preventDefault(); });
 $('review').addEventListener('close', () => { pending = undefined; });
 $('theme').addEventListener('change', () => { document.documentElement.dataset.theme = $('theme').value; pref('theme', $('theme').value); });
-$('vim').addEventListener('change', () => { editor.setOption('keyMap', $('vim').checked ? 'vim' : 'default'); $('vim-state').hidden = !$('vim').checked; $('vim-state').textContent = 'VIM · NORMAL'; pref('vim', String($('vim').checked)); });
+$('vim').addEventListener('change', () => { editor.setOption('keyMap', $('vim').checked ? 'vim' : 'default'); pref('vim', String($('vim').checked)); });
 document.addEventListener('pointerdown', e => { if (!$('context-menu').contains(e.target)) closeMenu(); });
 window.addEventListener('resize', closeMenu);
 document.addEventListener('keydown', e => {

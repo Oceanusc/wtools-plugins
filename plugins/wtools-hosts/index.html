@@ -9,24 +9,22 @@
 <body>
   <aside class="sidebar">
     <nav aria-label="配置方案">
-      <button id="system" class="nav-item"><span class="nav-icon">▤</span><span>系统 hosts<small>查看当前生效内容</small></span><span class="tag">只读</span></button>
+      <button id="system" class="nav-item"><span class="nav-icon">▤</span><span>系统 hosts</span><span class="tag">只读</span></button>
       <div class="section-heading">基础配置</div>
-      <button id="public" class="nav-item" aria-current="true"><span class="public-dot"></span><span>公共配置<small>始终参与合并</small></span></button>
+      <button id="public" class="nav-item" aria-current="true"><span class="public-dot"></span><span>公共配置</span></button>
       <div class="section-heading"><span>自定义方案 <b id="profile-count">0</b></span><button id="add" class="icon-button" title="新建方案" aria-label="新建方案">＋</button></div>
       <div class="segmented" aria-label="方案选择方式"><button id="single" aria-pressed="false">单选</button><button id="multiple" aria-pressed="true">多选</button></div>
       <ul id="profiles"></ul>
-      <div id="empty" hidden><span>还没有自定义方案</span><p>为开发、测试等环境<br>创建独立的 hosts 片段</p><button id="empty-add">＋ 新建第一个方案</button></div>
+      <div id="empty" hidden><span>暂无方案</span><button id="empty-add">＋ 新建方案</button></div>
     </nav>
     <div class="sidebar-bottom"><div><button id="settings-button">⚙ <span>偏好设置</span></button><button id="help-button" title="使用帮助" aria-label="使用帮助">?</button></div></div>
   </aside>
   <main>
     <section class="editor-panel" aria-label="hosts 编辑器">
-      <div class="editor-heading"><div><div class="title-row"><h2 id="editor-title">公共配置</h2><span id="dirty" class="dirty" hidden title="有未保存的更改"></span><span id="readonly" class="tag" hidden>只读</span></div><p id="editor-description">首次使用时读取系统 hosts，作为所有方案的基础。</p></div><div class="heading-actions"><button id="refresh" hidden>↻ 重新读取</button><button id="more" class="icon-button" aria-label="管理当前方案" title="管理当前方案" hidden>···</button></div></div>
+      <div class="editor-heading"><div class="title-row"><h2 id="editor-title">公共配置</h2><span id="dirty" class="dirty" hidden title="有未保存的更改"></span><span id="readonly" class="tag" hidden>只读</span></div><div class="heading-actions"><button id="refresh" hidden>↻ 重新读取</button><button id="more" class="icon-button" aria-label="管理当前方案" title="管理当前方案" hidden>···</button></div></div>
       <div id="editor-container"><textarea id="content" aria-label="hosts 内容" spellcheck="false"></textarea></div>
-      <div class="editor-status"><span id="cursor">行 1，列 1</span><span id="line-count">1 行</span><span id="vim-state" hidden>VIM</span><span class="encoding">UTF-8</span></div>
     </section>
-    <footer class="apply-bar"><div class="merge-summary"><span class="merge-icon" aria-hidden="true">⇄</span><div><strong id="merge-title">公共配置</strong><p id="merge-description">选择方案后，与公共配置合并应用</p></div></div><div class="actions"><button id="save" disabled>保存 <kbd>Ctrl S</kbd></button><button id="preview" class="primary" disabled>应用配置 <span aria-hidden="true">→</span></button></div></footer>
-    <div class="feedback"><p id="status" role="status" aria-live="polite">正在读取配置…</p><button id="retry" hidden>重试</button><span id="applied-state">尚未在本次会话应用</span></div>
+    <footer class="apply-bar"><div class="status-wrap"><p id="status" role="status" aria-live="polite">正在读取配置…</p><button id="retry" hidden>重试</button></div><div class="actions"><button id="save" disabled>保存</button><button id="preview" class="primary" disabled>应用配置 <span aria-hidden="true">→</span></button></div></footer>
   </main>
   <div id="context-menu" class="context-menu" role="menu" hidden><button data-action="apply" role="menuitem">应用此方案 <span>↵</span></button><hr><button data-action="rename" role="menuitem">重命名</button><button data-action="duplicate" role="menuitem">复制方案</button><button data-action="delete" class="danger" role="menuitem">删除方案</button></div>
   <dialog id="review" aria-labelledby="review-title"><div class="dialog-heading"><div><span class="eyebrow">READY TO SWITCH</span><h2 id="review-title">确认应用配置</h2></div><button data-close="review" class="icon-button" aria-label="关闭">×</button></div><p id="selection"></p><p id="conflicts" class="warning" hidden></p><label for="result">合并后将写入系统的内容</label><textarea id="result" rows="10" readonly spellcheck="false" wrap="off"></textarea><details><summary>对照系统当前 hosts</summary><textarea id="current" rows="5" aria-label="系统当前 hosts" readonly spellcheck="false" wrap="off"></textarea></details><p id="review-status" role="status"></p><div class="dialog-actions"><button data-close="review">返回编辑</button><button id="apply" class="primary">确认写入系统 hosts</button></div></dialog>
