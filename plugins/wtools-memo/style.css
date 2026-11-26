@@ -13,15 +13,12 @@
 .dismiss-guide { position: absolute; right: 6px; top: 4px; border: 0; padding: 0 6px; background: transparent; font-size: 18px; color: var(--muted); }
 .empty:has(+ .getting-started:not([hidden])) { margin-top: 12vh; }
 @media (min-width: 601px) and (max-width: 1000px) {
-  :root { font-size: 14px; }
-  body { grid-template-rows: 56px minmax(0,1fr) 24px; }
-  .top { padding: 8px 14px; gap: 16px; }
-  .brand { padding: 4px 10px; gap: 6px; }
-  h1 { font-size: 18px; }
-  .brand-icon { width: 21px; height: 21px; line-height: 21px; }
-  .top input { font-size: 18px; }
-  .plain { font-size: 24px; }
-  main { grid-template-columns: 160px minmax(0,1fr) 64px; }
+  :root { font-size: 15px; }
+  body { grid-template-rows: 46px minmax(0,1fr) 26px; }
+  .top { padding: 6px 14px; gap: 10px; }
+  .top input { font-size: 14px; }
+  .plain { font-size: 18px; }
+  main { grid-template-columns: 180px minmax(0,1fr) 64px; }
   aside { padding-top: 8px; }
   .tag { padding: 8px 16px; }
   .tag span { width: 23px; }
