@@ -168,9 +168,13 @@ input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent);
 .result-delta { color: var(--success); font-weight: 500; }
 .result-error { color: var(--danger); font-size: 12px; display: flex; align-items: center; gap: 6px; }
 .results-bar { min-height: 54px; padding: 10px 18px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; background: var(--surface); flex-shrink: 0; }
+.results-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .results-summary { font-size: 13px; color: var(--text); }
+.results-save-hint { font-size: 11px; color: var(--muted); }
 .results-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .results-actions .btn-primary { border-radius: 7px; min-height: 32px; padding: 5px 12px; }
+.results-actions .btn-outline { border-radius: 7px; min-height: 32px; padding: 5px 10px; }
+.dir-setting-actions { display: flex; align-items: center; gap: 6px; max-width: 220px; }
 
 /* Dialogs */
 dialog { padding: 0; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); box-shadow: var(--shadow); width: min(720px, calc(100vw - 24px)); max-height: calc(100vh - 24px); overflow: auto; }
@@ -188,7 +192,7 @@ dialog::backdrop { background: rgba(15, 18, 32, 0.5); }
 .setting-row select { width: 160px; }
 .settings-note { margin: 4px 0 0; font-size: 11px; color: var(--muted); line-height: 1.6; }
 
-.toast { position: fixed; left: 50%; bottom: 68px; transform: translateX(-50%); background: #252733; color: #fff; padding: 8px 14px; border-radius: 7px; font-size: 12px; z-index: 50; box-shadow: var(--shadow); max-width: 85vw; text-align: center; }
+.toast { position: fixed; left: 50%; bottom: 68px; transform: translateX(-50%); background: #252733; color: #fff; padding: 9px 16px; border-radius: 7px; font-size: 12px; z-index: 100; box-shadow: var(--shadow); max-width: 85vw; text-align: center; white-space: pre-line; line-height: 1.5; }
 .toast.error { background: var(--danger); }
 
 /* Responsive adaptation for WTools 760x570 and 410x300 */

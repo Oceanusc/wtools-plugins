@@ -25,6 +25,7 @@ const state = {
   mcIndex: 0,
   mcMap: new Map(), // id -> { blob, name, width, height, rect }
   dragId: null,
+  saveDirHandle: null,
   settings: { theme: 'light', downloadMode: 'zip' },
 };
 
@@ -54,7 +55,103 @@ function showToast(msg, isError = false) {
   toastTimer = setTimeout(() => { el.hidden = true; }, isError ? 5000 : 3000);
 }
 
-function saveBlob(blob, filename) {
+function openHandleDb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('wtools-image-batch-db', 1);
+    req.onupgradeneeded = () => {
+      if (!req.result.objectStoreNames.contains('handles')) {
+        req.result.createObjectStore('handles');
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function persistDirHandle(handle) {
+  try {
+    const db = await openHandleDb();
+    const tx = db.transaction('handles', 'readwrite');
+    if (handle) tx.objectStore('handles').put(handle, 'saveDir');
+    else tx.objectStore('handles').delete('saveDir');
+  } catch { /* ignore */ }
+}
+
+async function restoreDirHandle() {
+  try {
+    const db = await openHandleDb();
+    const req = db.transaction('handles', 'readonly').objectStore('handles').get('saveDir');
+    const handle = await new Promise(resolve => {
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => resolve(null);
+    });
+    if (handle) {
+      state.saveDirHandle = handle;
+      updateSaveDirUi();
+    }
+  } catch { /* ignore */ }
+}
+
+function updateSaveDirUi() {
+  const name = state.saveDirHandle ? state.saveDirHandle.name : '默认下载目录';
+  const dirText = state.saveDirHandle ? `📁 ${name}` : '默认下载目录';
+  if ($('settings-dir-name')) $('settings-dir-name').textContent = dirText;
+  if ($('btn-clear-dir')) $('btn-clear-dir').hidden = !state.saveDirHandle;
+  if ($('results-save-hint')) $('results-save-hint').textContent = `保存位置：${dirText}`;
+}
+
+async function pickSaveDirectory() {
+  if (typeof window.showDirectoryPicker !== 'function') {
+    showToast('当前环境不支持自定义保存目录，将使用系统默认下载目录', true);
+    return;
+  }
+  try {
+    const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
+    state.saveDirHandle = handle;
+    await persistDirHandle(handle);
+    updateSaveDirUi();
+    showToast(`已设置保存目录：${handle.name}`);
+  } catch (err) {
+    if (err?.name !== 'AbortError') {
+      showToast(err?.message || '无法选择保存目录', true);
+    }
+  }
+}
+
+async function clearSaveDirectory() {
+  state.saveDirHandle = null;
+  await persistDirHandle(null);
+  updateSaveDirUi();
+  showToast('已恢复为默认下载目录');
+}
+
+async function writeToDirHandle(handle, blob, filename) {
+  let perm = await handle.queryPermission?.({ mode: 'readwrite' });
+  if (perm !== 'granted') {
+    perm = await handle.requestPermission?.({ mode: 'readwrite' });
+  }
+  if (perm !== 'granted') throw new Error('未获得该目录的写入权限');
+  const fileHandle = await handle.getFileHandle(filename, { create: true });
+  const writable = await fileHandle.createWritable();
+  await writable.write(blob);
+  await writable.close();
+}
+
+async function saveBlob(blob, filename, silent = false) {
+  if (state.saveDirHandle) {
+    try {
+      await writeToDirHandle(state.saveDirHandle, blob, filename);
+      if (!silent) {
+        const msg = `已保存到「${state.saveDirHandle.name}」：${filename}`;
+        showToast(msg);
+        if ($('results-save-hint')) $('results-save-hint').textContent = msg;
+      }
+      return true;
+    } catch (err) {
+      showToast(`写入目录失败（${err.message}），已改用默认下载`, true);
+    }
+  }
+
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -63,7 +160,11 @@ function saveBlob(blob, filename) {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
-  showToast(`已发起下载：${filename}\n请在下载位置查看文件。`);
+  if (!silent) {
+    showToast(`已发起下载：${filename}\n请在系统「下载」目录查看文件。`);
+    if ($('results-save-hint')) $('results-save-hint').textContent = `已发起下载：${filename}（请在「下载」目录查看）`;
+  }
+  return true;
 }
 
 function loadSettings() {
@@ -622,15 +723,19 @@ async function downloadAllResults() {
   const ok = state.results.filter(r => !r.error && r.blob);
   if (!ok.length) return;
   if (ok.length === 1) {
-    saveBlob(ok[0].blob, ok[0].name);
+    await saveBlob(ok[0].blob, ok[0].name);
     return;
   }
   if (state.settings.downloadMode === 'individual' || !window.JSZip) {
     for (const r of ok) {
-      saveBlob(r.blob, r.name);
-      await new Promise(resolve => setTimeout(resolve, 120));
+      await saveBlob(r.blob, r.name, true);
+      if (!state.saveDirHandle) await new Promise(resolve => setTimeout(resolve, 120));
     }
-    showToast(`已发起下载 ${ok.length} 个文件\n请在下载位置查看文件。`);
+    const msg = state.saveDirHandle
+      ? `已保存 ${ok.length} 个文件到「${state.saveDirHandle.name}」`
+      : `已发起下载 ${ok.length} 个文件\n请在系统「下载」目录查看文件。`;
+    showToast(msg);
+    if ($('results-save-hint')) $('results-save-hint').textContent = msg.replace('\n', ' ');
     return;
   }
   const zip = new window.JSZip();
@@ -646,7 +751,7 @@ async function downloadAllResults() {
     zip.file(fname, r.blob);
   }
   const zipBlob = await zip.generateAsync({ type: 'blob' });
-  saveBlob(zipBlob, `图片批量处理_${ok.length}张.zip`);
+  await saveBlob(zipBlob, `图片批量处理_${ok.length}张.zip`);
 }
 
 // ---------------- Manual Cropper ----------------
@@ -1024,26 +1129,36 @@ function bindEvents() {
   $('file-input').addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
   $('folder-input').addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
 
-  const qp = $('queue-panel');
   let dragDepth = 0;
-  qp.addEventListener('dragenter', e => {
-    if (e.dataTransfer?.types?.includes('Files')) {
-      dragDepth++;
-      $('drop-overlay').hidden = false;
-    }
+  const hasFilesDrag = e => {
+    const dt = e.dataTransfer;
+    if (!dt) return false;
+    if (state.dragId) return false;
+    const types = Array.from(dt.types || []);
+    return types.includes('Files') || (dt.files && dt.files.length > 0);
+  };
+  document.addEventListener('dragenter', e => {
+    if (!hasFilesDrag(e)) return;
+    e.preventDefault();
+    if (++dragDepth > 0 && !state.busy) $('drop-overlay').hidden = false;
   });
-  qp.addEventListener('dragleave', () => {
+  document.addEventListener('dragleave', e => {
+    if (!hasFilesDrag(e)) return;
     dragDepth = Math.max(0, dragDepth - 1);
     if (!dragDepth) $('drop-overlay').hidden = true;
   });
-  qp.addEventListener('dragover', e => {
-    if (e.dataTransfer?.types?.includes('Files')) e.preventDefault();
+  document.addEventListener('dragover', e => {
+    if (!hasFilesDrag(e)) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = state.busy ? 'none' : 'copy';
   });
-  qp.addEventListener('drop', e => {
-    if (e.dataTransfer?.files?.length) {
-      e.preventDefault();
-      dragDepth = 0;
-      $('drop-overlay').hidden = true;
+  document.addEventListener('drop', e => {
+    if (!hasFilesDrag(e)) return;
+    e.preventDefault();
+    dragDepth = 0;
+    $('drop-overlay').hidden = true;
+    if (!state.busy && e.dataTransfer?.files?.length) {
+      if (!$('results-view').hidden) hideResultsView();
       addFiles(e.dataTransfer.files);
     }
   });
@@ -1053,6 +1168,7 @@ function bindEvents() {
   $('btn-continue').addEventListener('click', hideResultsView);
   $('btn-replace').addEventListener('click', replaceOriginalsWithResults);
   $('btn-download-results').addEventListener('click', downloadAllResults);
+  $('btn-pick-dir-bar').addEventListener('click', pickSaveDirectory);
 
   // Dialogs
   $('preview-close').addEventListener('click', () => $('preview-dialog').close());
@@ -1060,6 +1176,8 @@ function bindEvents() {
   $('settings-close').addEventListener('click', () => $('settings-dialog').close());
   $('theme-select').addEventListener('change', e => { state.settings.theme = e.target.value; saveSettings(); });
   $('download-mode-select').addEventListener('change', e => { state.settings.downloadMode = e.target.value; saveSettings(); });
+  $('btn-pick-dir').addEventListener('click', pickSaveDirectory);
+  $('btn-clear-dir').addEventListener('click', clearSaveDirectory);
 
   // Shortcuts
   window.addEventListener('keydown', e => {
@@ -1087,6 +1205,8 @@ function initWtools() {
 }
 
 loadSettings();
+restoreDirHandle();
+updateSaveDirUi();
 bindEvents();
 initWtools();
 syncQueueView();

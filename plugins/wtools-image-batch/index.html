@@ -548,11 +548,15 @@
         <ul class="result-list" id="result-list"></ul>
       </div>
       <footer class="results-bar">
-        <span class="results-summary" id="results-summary">批量处理完成</span>
+        <div class="results-meta">
+          <span class="results-summary" id="results-summary">批量处理完成</span>
+          <span class="results-save-hint" id="results-save-hint">保存位置：默认下载目录</span>
+        </div>
         <div class="results-actions">
+          <button type="button" class="btn-outline" id="btn-pick-dir-bar" title="设置自定义保存目录"><svg class="icon"><use href="#i-folder"/></svg>保存目录</button>
           <button type="button" class="btn-primary" id="btn-continue"><svg class="icon"><use href="#i-continue"/></svg>继续处理</button>
           <button type="button" class="btn-primary" id="btn-replace"><svg class="icon"><use href="#i-replace"/></svg>替换原图</button>
-          <button type="button" class="btn-primary" id="btn-download-results"><svg class="icon"><use href="#i-folder"/></svg>显示结果</button>
+          <button type="button" class="btn-primary" id="btn-download-results"><svg class="icon"><use href="#i-download"/></svg>下载结果</button>
         </div>
       </footer>
     </section>
@@ -597,6 +601,14 @@
           <option value="individual">逐个文件下载</option>
         </select>
       </label>
+      <div class="setting-row">
+        <span>自定义保存目录</span>
+        <div class="dir-setting-actions">
+          <span class="pick-name" id="settings-dir-name">默认下载目录</span>
+          <button type="button" class="btn-outline" id="btn-pick-dir">选择目录</button>
+          <button type="button" class="btn-outline" id="btn-clear-dir" hidden>恢复默认</button>
+        </div>
+      </div>
       <p class="settings-note">所有图片均在本地浏览器内核中离线处理，不会上传到任何服务器。PNG 压缩采用颜色量化与无损重编码；TIFF、GIF、PDF、ZIP 均由随包提供的离线引擎完成。</p>
     </div>
   </dialog>
