@@ -46,11 +46,8 @@
     $("result-list").hidden = $("image-result").hidden = true;
     $("result-list").replaceChildren();
     $("copy").disabled = $("use-result").disabled = true;
-    $("output-info").textContent = "等待处理";
   }
   function updateInputHint() {
-    const bytes = new TextEncoder().encode($("input").value).length;
-    $("input-hint").textContent = `${tools[tool].hint}${bytes ? ` · ${bytes.toLocaleString()} 字节` : ""}`;
   }
   function fileMode() { return (tool === "image" && $("direction").value === "encode") || (tool === "hash" && $("hash-source").value === "file"); }
   function showOptions(open) {
@@ -135,7 +132,6 @@
     }
     $("copy").disabled = Boolean(image);
     $("use-result").disabled = Boolean(image) || tool === "uuid" || fileMode();
-    $("output-info").textContent = image ? "图片已解码" : rows ? `${rows.length} 项结果 · 可逐项复制` : `${resultText.length.toLocaleString()} 个字符`;
     notice("处理完成");
   }
   function download(url, filename) {
@@ -211,7 +207,7 @@
         }
       } else result = convert(tool, text);
       showResult(result, token);
-    } catch (error) { if (token === revision) { $("output-info").textContent = "处理失败"; notice(error.message || "处理失败，请检查输入。", true); } }
+    } catch (error) { if (token === revision) { notice(error.message || "处理失败，请检查输入。", true); } }
     finally { if (token === revision) busy(false); }
   }
   function setFile(file) {
