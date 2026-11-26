@@ -76,6 +76,27 @@
       "minWtoolsVersion": "0.6.9",
       "featured": false,
       "publishedAt": 1795525713872
+    },
+    {
+      "directory": "wtools-calc-pad",
+      "category": "productivity",
+      "minWtoolsVersion": "0.6.7",
+      "featured": false,
+      "publishedAt": 1795679543000
+    },
+    {
+      "directory": "wtools-image-batch",
+      "category": "media",
+      "minWtoolsVersion": "0.6.7",
+      "featured": false,
+      "publishedAt": 1795679600000
+    },
+    {
+      "directory": "wtools-video-batch",
+      "category": "media",
+      "minWtoolsVersion": "0.6.7",
+      "featured": false,
+      "publishedAt": 1795679600000
     }
   ]
 }

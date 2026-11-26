@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; font-src 'self' blob: data:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>图片批量处理</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="vendor/pako.min.js" defer></script>
+  <script src="vendor/UPNG.js" defer></script>
+  <script src="vendor/UTIF.js" defer></script>
+  <script src="vendor/pdf-lib.min.js" defer></script>
+  <script src="vendor/jszip.min.js" defer></script>
+  <script src="index.js" type="module"></script>
+</head>
+<body>
+  <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-compress" viewBox="0 0 24 24"><path d="M4 10h16M4 14h16M12 3v4m-3-2 3 3 3-3M12 21v-4m-3 2 3-3 3 3"/></symbol>
+    <symbol id="i-convert" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-15.5-6.3M3 4v5h5M3 12a9 9 0 0 0 15.5 6.3M21 20v-5h-5"/></symbol>
+    <symbol id="i-resize" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v6H3M15 21v-6h6M14 10l5-5m-4 0h4v4"/></symbol>
+    <symbol id="i-watermark" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 15h10M9 11l3-4 3 4"/></symbol>
+    <symbol id="i-round" viewBox="0 0 24 24"><path d="M4 11V7a3 3 0 0 1 3-3h4M20 11V7a3 3 0 0 0-3-3h-4M4 13v4a3 3 0 0 0 3 3h4M20 13v4a3 3 0 0 1-3 3h-4"/></symbol>
+    <symbol id="i-border" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="10" height="10" rx="1"/></symbol>
+    <symbol id="i-pad" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><rect x="7" y="8" width="10" height="8" rx="1" stroke-dasharray="2 2"/></symbol>
+    <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol>
+    <symbol id="i-flip" viewBox="0 0 24 24"><path d="M12 3v18M8 7l-5 5 5 5V7ZM16 7l5 5-5 5V7Z"/></symbol>
+    <symbol id="i-pdf" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 15h8M8 11h3"/></symbol>
+    <symbol id="i-merge-img" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></symbol>
+    <symbol id="i-gif" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M7 10a2 2 0 1 0 0 4h1v-2H7M12 10v4M15 14v-4h3m-3 2h2"/></symbol>
+    <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="m9 3-1 3-3 1-2 5 2 5 3 1 1 3h6l1-3 3-1 2-5-2-5-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></symbol>
+    <symbol id="i-add-img" viewBox="0 0 24 24"><rect x="3" y="4" width="16" height="16" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="m3 16 4-4 3 3 4-4 5 5M19 2v6m-3-3h6"/></symbol>
+    <symbol id="i-clear" viewBox="0 0 24 24"><path d="M4 7h16M6 12h12M8 17h8"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="m3 3 18 9-18 9 4-9-4-9Zm4 9h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-drag" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="6" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="18" r="1.4" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v3h16v-3"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-replace" viewBox="0 0 24 24"><path d="M7 16H3v4m0-4 4 4m10-12h4V4m0 4-4-4M4 10a8 8 0 0 1 13.7-5.7M20 14a8 8 0 0 1-13.7 5.7"/></symbol>
+    <symbol id="i-continue" viewBox="0 0 24 24"><path d="m6 17 5-5-5-5m7 10 5-5-5-5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></symbol>
+  </svg>
+
+  <div class="app-shell" id="app-shell">
+    <!-- Left Navigation Sidebar -->
+    <aside class="sidebar" aria-label="功能导航">
+      <nav class="nav-list" id="nav-list">
+        <button class="nav-item active" data-mode="compress" title="图片压缩"><svg class="icon"><use href="#i-compress"/></svg><span>图片压缩</span></button>
+        <button class="nav-item" data-mode="convert" title="格式转换"><svg class="icon"><use href="#i-convert"/></svg><span>格式转换</span></button>
+        <button class="nav-item" data-mode="resize" title="修改尺寸"><svg class="icon"><use href="#i-resize"/></svg><span>修改尺寸</span></button>
+        <button class="nav-item" data-mode="watermark" title="添加水印"><svg class="icon"><use href="#i-watermark"/></svg><span>添加水印</span></button>
+        <button class="nav-item" data-mode="round" title="添加圆角"><svg class="icon"><use href="#i-round"/></svg><span>添加圆角</span></button>
+        <button class="nav-item" data-mode="border" title="添加边框"><svg class="icon"><use href="#i-border"/></svg><span>添加边框</span></button>
+        <button class="nav-item" data-mode="pad" title="补边留白"><svg class="icon"><use href="#i-pad"/></svg><span>补边留白</span></button>
+        <button class="nav-item" data-mode="crop" title="裁剪"><svg class="icon"><use href="#i-crop"/></svg><span>裁剪</span></button>
+        <button class="nav-item" data-mode="rotate" title="旋转"><svg class="icon"><use href="#i-rotate"/></svg><span>旋转</span></button>
+        <button class="nav-item" data-mode="flip" title="翻转"><svg class="icon"><use href="#i-flip"/></svg><span>翻转</span></button>
+        <div class="nav-divider" role="separator"></div>
+        <button class="nav-item" data-mode="merge-pdf" title="合并为 PDF"><svg class="icon"><use href="#i-pdf"/></svg><span>合并为 PDF</span></button>
+        <button class="nav-item" data-mode="merge-image" title="合并为图片"><svg class="icon"><use href="#i-merge-img"/></svg><span>合并为图片</span></button>
+        <button class="nav-item" data-mode="merge-gif" title="合并为 GIF"><svg class="icon"><use href="#i-gif"/></svg><span>合并为 GIF</span></button>
+        <div class="nav-divider" role="separator"></div>
+        <button class="nav-item" data-mode="manual-crop" title="手动裁剪"><svg class="icon"><use href="#i-scissors"/></svg><span>手动裁剪</span></button>
+      </nav>
+    </aside>
+
+    <!-- Main Editor View -->
+    <main class="main-editor" id="main-editor">
+      <!-- Middle Parameters Panel -->
+      <section class="params-panel" id="params-panel" aria-label="参数设置">
+        <div class="params-scroll">
+          <!-- 1. Compress -->
+          <div class="option-group" data-options="compress">
+            <div class="field-block">
+              <div class="field-head">
+                <label for="compress-quality">压缩质量</label>
+                <span class="badge-value" id="compress-quality-badge">80</span>
+              </div>
+              <input id="compress-quality" type="range" min="1" max="100" value="80">
+              <p class="field-hint">值越高越清晰，文件也越大</p>
+            </div>
+            <div class="field-block">
+              <label for="compress-target-kb">目标文件大小</label>
+              <div class="underline-input">
+                <input id="compress-target-kb" type="number" min="1" max="102400" placeholder="留空按质量压缩">
+                <span class="unit">KB</span>
+              </div>
+              <p class="field-hint">支持 PNG、JPG、JPEG、WebP、TIFF、AVIF、SVG</p>
+            </div>
+          </div>
+
+          <!-- 2. Convert -->
+          <div class="option-group" data-options="convert" hidden>
+            <div class="field-block">
+              <label>目标图片格式</label>
+              <div class="format-grid" id="convert-format-grid" role="radiogroup" aria-label="目标图片格式">
+                <button type="button" class="format-btn active" data-format="png">PNG</button>
+                <button type="button" class="format-btn" data-format="jpeg">JPEG</button>
+                <button type="button" class="format-btn" data-format="jpg">JPG</button>
+                <button type="button" class="format-btn" data-format="webp">WebP</button>
+                <button type="button" class="format-btn" data-format="tiff">TIFF</button>
+                <button type="button" class="format-btn" data-format="avif">AVIF</button>
+                <button type="button" class="format-btn" data-format="bmp">BMP</button>
+                <button type="button" class="format-btn" data-format="gif">GIF</button>
+                <button type="button" class="format-btn" data-format="ico">ICO</button>
+              </div>
+            </div>
+            <div class="field-block" id="convert-quality-wrap" hidden>
+              <div class="field-head">
+                <label for="convert-quality">输出质量</label>
+                <span class="badge-value" id="convert-quality-val">90</span>
+              </div>
+              <input id="convert-quality" type="range" min="10" max="100" value="90">
+            </div>
+            <p class="field-hint">支持 PNG、JPG、JPEG、WebP、TIFF、AVIF、BMP、GIF、ICO 9 种格式互转</p>
+          </div>
+
+          <!-- 3. Resize -->
+          <div class="option-group" data-options="resize" hidden>
+            <div class="field-block">
+              <label>调整方式</label>
+              <div class="segmented" id="resize-mode-seg">
+                <button type="button" data-resize-mode="fixed" aria-pressed="true">固定尺寸</button>
+                <button type="button" data-resize-mode="percent" aria-pressed="false">按百分比</button>
+              </div>
+            </div>
+            <div id="resize-fixed-fields">
+              <div class="two-col">
+                <div class="field-block">
+                  <label for="resize-width">宽度 (px)</label>
+                  <input id="resize-width" type="number" min="1" max="16384" placeholder="自动">
+                </div>
+                <div class="field-block">
+                  <label for="resize-height">高度 (px)</label>
+                  <input id="resize-height" type="number" min="1" max="16384" placeholder="自动">
+                </div>
+              </div>
+              <label class="checkbox-row"><input id="resize-keep-aspect" type="checkbox" checked>保持原始宽高比（填单边自动等比缩放）</label>
+            </div>
+            <div id="resize-percent-fields" hidden>
+              <div class="field-block">
+                <div class="field-head">
+                  <label for="resize-percent">缩放比例</label>
+                  <span class="badge-value" id="resize-percent-val">50%</span>
+                </div>
+                <input id="resize-percent" type="range" min="5" max="400" value="50">
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Watermark -->
+          <div class="option-group" data-options="watermark" hidden>
+            <div class="field-block">
+              <label>水印类型</label>
+              <div class="segmented" id="wm-type-seg">
+                <button type="button" data-wm-type="text" aria-pressed="true">文字水印</button>
+                <button type="button" data-wm-type="image" aria-pressed="false">图片水印</button>
+              </div>
+            </div>
+            <div id="wm-text-fields">
+              <div class="field-block">
+                <label for="wm-text">水印文字</label>
+                <input id="wm-text" type="text" value="WTools" maxlength="100">
+              </div>
+              <div class="two-col">
+                <div class="field-block">
+                  <label for="wm-font-size">字号 (px)</label>
+                  <input id="wm-font-size" type="number" min="8" max="400" value="36">
+                </div>
+                <div class="field-block">
+                  <label for="wm-color">颜色</label>
+                  <input id="wm-color" type="color" value="#ffffff">
+                </div>
+              </div>
+            </div>
+            <div id="wm-image-fields" hidden>
+              <div class="field-block">
+                <label>水印图片</label>
+                <div class="file-pick-row">
+                  <button type="button" class="btn-outline" id="wm-pick-img">选择图片</button>
+                  <span class="pick-name" id="wm-img-name">未选择</span>
+                </div>
+                <input id="wm-file-input" type="file" accept="image/*" hidden>
+              </div>
+              <div class="field-block">
+                <div class="field-head">
+                  <label for="wm-img-scale">水印大小（相对原图宽）</label>
+                  <span class="badge-value" id="wm-img-scale-val">20%</span>
+                </div>
+                <input id="wm-img-scale" type="range" min="3" max="100" value="20">
+              </div>
+            </div>
+            <div class="field-block">
+              <div class="field-head">
+                <label for="wm-opacity">不透明度</label>
+                <span class="badge-value" id="wm-opacity-val">50%</span>
+              </div>
+              <input id="wm-opacity" type="range" min="5" max="100" value="50">
+            </div>
+            <div class="field-block">
+              <div class="field-head">
+                <label for="wm-angle">旋转角度</label>
+                <span class="badge-value" id="wm-angle-val">-30°</span>
+              </div>
+              <input id="wm-angle" type="range" min="-180" max="180" value="-30">
+            </div>
+            <label class="checkbox-row"><input id="wm-tile" type="checkbox">平铺水印</label>
+            <div class="field-block" id="wm-tile-gap-wrap" hidden>
+              <label for="wm-tile-gap">平铺间距 (px)</label>
+              <input id="wm-tile-gap" type="number" min="10" max="600" value="80">
+            </div>
+            <div class="field-block" id="wm-pos-wrap">
+              <label>水印位置</label>
+              <div class="pos-grid" id="wm-pos-grid">
+                <button type="button" data-pos="0-0">左上</button>
+                <button type="button" data-pos="0-1">上中</button>
+                <button type="button" data-pos="0-2">右上</button>
+                <button type="button" data-pos="1-0">左中</button>
+                <button type="button" data-pos="1-1">居中</button>
+                <button type="button" data-pos="1-2">右中</button>
+                <button type="button" data-pos="2-0">左下</button>
+                <button type="button" data-pos="2-1">下中</button>
+                <button type="button" data-pos="2-2" class="active">右下</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Round Corners -->
+          <div class="option-group" data-options="round" hidden>
+            <div class="field-block">
+              <label>圆角单位</label>
+              <div class="segmented" id="round-unit-seg">
+                <button type="button" data-round-unit="percent" aria-pressed="true">按百分比 (%)</button>
+                <button type="button" data-round-unit="px" aria-pressed="false">固定像素 (px)</button>
+              </div>
+            </div>
+            <div class="field-block" id="round-percent-wrap">
+              <div class="field-head">
+                <label for="round-percent">圆角比例（50% 为正圆/椭圆）</label>
+                <span class="badge-value" id="round-percent-val">15%</span>
+              </div>
+              <input id="round-percent" type="range" min="1" max="50" value="15">
+            </div>
+            <div class="field-block" id="round-px-wrap" hidden>
+              <label for="round-px">圆角半径 (px)</label>
+              <input id="round-px" type="number" min="1" max="2000" value="32">
+            </div>
+            <p class="field-hint">自动输出为支持透明通道的 PNG（或 WebP）以保留透明圆角</p>
+          </div>
+
+          <!-- 6. Add Border -->
+          <div class="option-group" data-options="border" hidden>
+            <div class="field-block">
+              <label for="border-width">边框宽度 (px)</label>
+              <input id="border-width" type="number" min="1" max="500" value="16">
+            </div>
+            <div class="two-col">
+              <div class="field-block">
+                <label for="border-color">边框颜色</label>
+                <input id="border-color" type="color" value="#ffffff">
+              </div>
+              <div class="field-block">
+                <label for="border-opacity">不透明度 (%)</label>
+                <input id="border-opacity" type="number" min="1" max="100" value="100">
+              </div>
+            </div>
+            <label class="checkbox-row"><input id="border-inside" type="checkbox">内边框（不增加图片总尺寸）</label>
+          </div>
+
+          <!-- 7. Pad / Letterbox -->
+          <div class="option-group" data-options="pad" hidden>
+            <div class="field-block">
+              <label for="pad-mode">补边方式</label>
+              <select id="pad-mode">
+                <option value="uniform">四边统一留白 (px)</option>
+                <option value="sides">分别设置上下左右 (px)</option>
+                <option value="ratio">补边至目标比例</option>
+              </select>
+            </div>
+            <div id="pad-uniform-wrap" class="field-block">
+              <label for="pad-all">留白宽度 (px)</label>
+              <input id="pad-all" type="number" min="0" max="2000" value="40">
+            </div>
+            <div id="pad-sides-wrap" class="two-col" hidden>
+              <div class="field-block"><label for="pad-top">上</label><input id="pad-top" type="number" min="0" max="2000" value="40"></div>
+              <div class="field-block"><label for="pad-bottom">下</label><input id="pad-bottom" type="number" min="0" max="2000" value="40"></div>
+              <div class="field-block"><label for="pad-left">左</label><input id="pad-left" type="number" min="0" max="2000" value="40"></div>
+              <div class="field-block"><label for="pad-right">右</label><input id="pad-right" type="number" min="0" max="2000" value="40"></div>
+            </div>
+            <div id="pad-ratio-wrap" class="field-block" hidden>
+              <label for="pad-ratio">目标宽高比</label>
+              <select id="pad-ratio">
+                <option value="1:1">1:1 (正方形)</option>
+                <option value="4:3">4:3</option>
+                <option value="3:4">3:4</option>
+                <option value="16:9">16:9</option>
+                <option value="9:16">9:16</option>
+              </select>
+            </div>
+            <div class="two-col">
+              <div class="field-block">
+                <label for="pad-color">填充颜色</label>
+                <input id="pad-color" type="color" value="#ffffff">
+              </div>
+              <div class="field-block">
+                <div class="field-head"><label for="pad-opacity">不透明度</label><span class="badge-value" id="pad-opacity-val">100%</span></div>
+                <input id="pad-opacity" type="range" min="0" max="100" value="100">
+              </div>
+            </div>
+            <p class="field-hint">不透明度为 0% 时将留白设为透明（输出为 PNG）</p>
+          </div>
+
+          <!-- 8. Batch Crop -->
+          <div class="option-group" data-options="crop" hidden>
+            <div class="field-block">
+              <label>裁剪宽高比例</label>
+              <div class="ratio-grid" id="crop-ratio-grid">
+                <button type="button" class="format-btn active" data-ratio="1:1">1:1</button>
+                <button type="button" class="format-btn" data-ratio="4:3">4:3</button>
+                <button type="button" class="format-btn" data-ratio="3:4">3:4</button>
+                <button type="button" class="format-btn" data-ratio="16:9">16:9</button>
+                <button type="button" class="format-btn" data-ratio="9:16">9:16</button>
+                <button type="button" class="format-btn" data-ratio="3:2">3:2</button>
+                <button type="button" class="format-btn" data-ratio="2:3">2:3</button>
+                <button type="button" class="format-btn" data-ratio="custom">自定义</button>
+              </div>
+            </div>
+            <div id="crop-custom-wrap" class="two-col" hidden>
+              <div class="field-block"><label for="crop-rw">宽比</label><input id="crop-rw" type="number" min="1" max="100" value="16"></div>
+              <div class="field-block"><label for="crop-rh">高比</label><input id="crop-rh" type="number" min="1" max="100" value="9"></div>
+            </div>
+            <div class="field-block">
+              <label for="crop-anchor">裁剪区域对齐</label>
+              <select id="crop-anchor">
+                <option value="center" selected>居中裁剪</option>
+                <option value="top">靠上 / 靠左</option>
+                <option value="bottom">靠下 / 靠右</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 9. Rotate -->
+          <div class="option-group" data-options="rotate" hidden>
+            <div class="field-block">
+              <div class="field-head">
+                <label for="rotate-angle">旋转角度</label>
+                <span class="badge-value" id="rotate-angle-val">90°</span>
+              </div>
+              <input id="rotate-angle" type="range" min="-180" max="180" value="90">
+              <div class="quick-btns">
+                <button type="button" class="btn-outline" data-rot="-90">-90°</button>
+                <button type="button" class="btn-outline" data-rot="90">+90°</button>
+                <button type="button" class="btn-outline" data-rot="180">180°</button>
+                <button type="button" class="btn-outline" data-rot="45">45°</button>
+              </div>
+            </div>
+            <div class="field-block">
+              <label for="rotate-bg">空白处背景</label>
+              <select id="rotate-bg">
+                <option value="transparent">透明（PNG）</option>
+                <option value="white">白色</option>
+                <option value="black">黑色</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 10. Flip -->
+          <div class="option-group" data-options="flip" hidden>
+            <div class="field-block">
+              <label>翻转方向</label>
+              <div class="flip-options">
+                <label class="checkbox-row"><input id="flip-h" type="checkbox" checked>左右翻转（水平镜像）</label>
+                <label class="checkbox-row"><input id="flip-v" type="checkbox">上下翻转（垂直镜像）</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 11. Merge PDF -->
+          <div class="option-group" data-options="merge-pdf" hidden>
+            <div class="field-block">
+              <label for="pdf-page-size">页面大小</label>
+              <select id="pdf-page-size">
+                <option value="a4" selected>A4（210 × 297 mm）</option>
+                <option value="a3">A3（297 × 420 mm）</option>
+                <option value="a5">A5（148 × 210 mm）</option>
+                <option value="letter">Letter（216 × 279 mm）</option>
+                <option value="auto">自适应图片尺寸</option>
+              </select>
+            </div>
+            <div class="field-block">
+              <div class="segmented" id="pdf-margin-seg">
+                <button type="button" data-margin="0" aria-pressed="true">无边距</button>
+                <button type="button" data-margin="28" aria-pressed="false">窄边距</button>
+                <button type="button" data-margin="56" aria-pressed="false">宽边距</button>
+              </div>
+            </div>
+            <p class="field-hint">在右侧列表拖动图标 ⋮⋮ 可调整页面顺序</p>
+          </div>
+
+          <!-- 12. Merge Image -->
+          <div class="option-group" data-options="merge-image" hidden>
+            <div class="field-block">
+              <label>合并方向</label>
+              <div class="segmented" id="merge-dir-seg">
+                <button type="button" data-dir="vertical" aria-pressed="true">竖向合并</button>
+                <button type="button" data-dir="horizontal" aria-pressed="false">横向合并</button>
+              </div>
+            </div>
+            <div class="two-col">
+              <div class="field-block">
+                <label for="merge-gap">图片间距 (px)</label>
+                <input id="merge-gap" type="number" min="0" max="500" value="0">
+              </div>
+              <div class="field-block">
+                <label for="merge-bg">背景颜色</label>
+                <input id="merge-bg" type="color" value="#ffffff">
+              </div>
+            </div>
+            <div class="field-block">
+              <label for="merge-align">对齐方式</label>
+              <select id="merge-align">
+                <option value="center" selected>居中对齐</option>
+                <option value="start">靠左 / 靠上对齐</option>
+                <option value="end">靠右 / 靠下对齐</option>
+                <option value="stretch">等宽 / 等高拉伸对齐</option>
+              </select>
+            </div>
+            <div class="field-block">
+              <label for="merge-img-format">输出格式</label>
+              <select id="merge-img-format">
+                <option value="png" selected>PNG</option>
+                <option value="jpg">JPG</option>
+                <option value="webp">WebP</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 13. Merge GIF -->
+          <div class="option-group" data-options="merge-gif" hidden>
+            <div class="field-block">
+              <div class="field-head">
+                <label for="gif-delay">每帧停留时间</label>
+                <span class="badge-value" id="gif-delay-val">500 ms</span>
+              </div>
+              <input id="gif-delay" type="range" min="50" max="3000" step="50" value="500">
+            </div>
+            <div class="field-block">
+              <label for="gif-loop">循环次数（0 为无限循环）</label>
+              <input id="gif-loop" type="number" min="0" max="999" value="0">
+            </div>
+            <div class="field-block">
+              <label for="gif-fit">尺寸适配</label>
+              <select id="gif-fit">
+                <option value="contain" selected>等比居中（以第一张为画布）</option>
+                <option value="cover">铺满裁剪（以第一张为画布）</option>
+              </select>
+            </div>
+            <p class="field-hint">拖动右侧列表可调整 GIF 帧播放顺序</p>
+          </div>
+
+          <!-- 14. Manual Crop -->
+          <div class="option-group" data-options="manual-crop" hidden>
+            <div class="field-block">
+              <label>裁剪比例锁定</label>
+              <div class="ratio-grid" id="mc-ratio-grid">
+                <button type="button" class="format-btn active" data-mc-ratio="free">自由</button>
+                <button type="button" class="format-btn" data-mc-ratio="1:1">1:1</button>
+                <button type="button" class="format-btn" data-mc-ratio="4:3">4:3</button>
+                <button type="button" class="format-btn" data-mc-ratio="16:9">16:9</button>
+                <button type="button" class="format-btn" data-mc-ratio="3:4">3:4</button>
+                <button type="button" class="format-btn" data-mc-ratio="9:16">9:16</button>
+              </div>
+            </div>
+            <div class="field-block">
+              <label>当前图片进度</label>
+              <p class="mc-progress-text" id="mc-progress-text">0 / 0</p>
+              <p class="field-hint" id="mc-selection-info">在右侧画布拖动框选裁剪区域，确认后自动切换下一张</p>
+            </div>
+            <div class="mc-btn-stack">
+              <button type="button" class="btn-primary-soft" id="mc-confirm">确认裁剪并下一张</button>
+              <div class="two-col">
+                <button type="button" class="btn-outline" id="mc-prev">上一张</button>
+                <button type="button" class="btn-outline" id="mc-skip">跳过此张</button>
+              </div>
+              <button type="button" class="btn-outline" id="mc-reset">重置选区</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Queue / Manual Cropper Panel -->
+      <section class="queue-panel" id="queue-panel" aria-label="图片列表">
+        <!-- Empty Dropzone -->
+        <div class="empty-dropzone" id="empty-dropzone">
+          <div class="drop-card" id="drop-card">
+            <svg class="icon drop-icon"><use href="#i-add-img"/></svg>
+            <h3>拖入图片开始批量处理</h3>
+            <p>支持 PNG、JPG、JPEG、WebP、TIFF、AVIF、BMP、GIF、ICO、SVG</p>
+            <button type="button" class="btn-primary" id="empty-add-btn">选择图片文件</button>
+          </div>
+        </div>
+
+        <!-- File List -->
+        <div class="queue-scroll" id="queue-scroll" hidden>
+          <ul class="file-list" id="file-list"></ul>
+        </div>
+
+        <!-- Manual Crop Interactive Canvas -->
+        <div class="manual-crop-stage" id="manual-crop-stage" hidden>
+          <div class="mc-canvas-wrap" id="mc-canvas-wrap">
+            <canvas id="mc-canvas"></canvas>
+          </div>
+          <div class="mc-thumb-strip" id="mc-thumb-strip"></div>
+        </div>
+
+        <!-- Drag Overlay -->
+        <div class="drop-overlay" id="drop-overlay" hidden>
+          <svg class="icon"><use href="#i-add-img"/></svg>
+          <span>松开鼠标添加到列表</span>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <footer class="bottom-bar" id="bottom-bar">
+          <div class="bottom-tools">
+            <button type="button" class="tool-icon-btn" id="btn-settings" title="设置"><svg class="icon"><use href="#i-settings"/></svg></button>
+            <button type="button" class="tool-icon-btn" id="btn-add-folder" title="选择文件夹内图片"><svg class="icon"><use href="#i-folder"/></svg></button>
+            <button type="button" class="tool-icon-btn" id="btn-add-files" title="添加图片 (Ctrl+O)"><svg class="icon"><use href="#i-add-img"/></svg></button>
+            <button type="button" class="tool-icon-btn" id="btn-clear-files" title="清空列表"><svg class="icon"><use href="#i-clear"/></svg></button>
+          </div>
+          <div class="progress-inline" id="progress-inline" hidden>
+            <progress id="batch-progress" max="100" value="0"></progress>
+            <span id="progress-text">0/0</span>
+          </div>
+          <button type="button" class="btn-primary start-btn" id="btn-start" disabled>
+            <span id="start-label">开始处理 (0)</span>
+            <svg class="icon"><use href="#i-send"/></svg>
+          </button>
+        </footer>
+      </section>
+    </main>
+
+    <!-- Results Comparison View -->
+    <section class="results-view" id="results-view" hidden aria-label="处理结果">
+      <div class="results-scroll">
+        <ul class="result-list" id="result-list"></ul>
+      </div>
+      <footer class="results-bar">
+        <span class="results-summary" id="results-summary">批量处理完成</span>
+        <div class="results-actions">
+          <button type="button" class="btn-primary" id="btn-continue"><svg class="icon"><use href="#i-continue"/></svg>继续处理</button>
+          <button type="button" class="btn-primary" id="btn-replace"><svg class="icon"><use href="#i-replace"/></svg>替换原图</button>
+          <button type="button" class="btn-primary" id="btn-download-results"><svg class="icon"><use href="#i-folder"/></svg>显示结果</button>
+        </div>
+      </footer>
+    </section>
+  </div>
+
+  <!-- Effect Preview Dialog -->
+  <dialog id="preview-dialog">
+    <div class="dialog-head">
+      <h2 id="preview-title">效果预览</h2>
+      <button type="button" class="tool-icon-btn" id="preview-close" aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="preview-body">
+      <div class="preview-pane">
+        <span class="preview-label" id="preview-orig-meta">原图</span>
+        <div class="preview-img-box"><img id="preview-orig-img" alt="原图预览"></div>
+      </div>
+      <div class="preview-pane">
+        <span class="preview-label" id="preview-out-meta">处理后</span>
+        <div class="preview-img-box"><img id="preview-out-img" alt="效果预览"></div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Settings Dialog -->
+  <dialog id="settings-dialog">
+    <div class="dialog-head">
+      <h2>设置与说明</h2>
+      <button type="button" class="tool-icon-btn" id="settings-close" aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="settings-body">
+      <label class="setting-row">
+        <span>界面主题</span>
+        <select id="theme-select">
+          <option value="light">浅色</option>
+          <option value="dark">深色</option>
+        </select>
+      </label>
+      <label class="setting-row">
+        <span>多文件下载方式</span>
+        <select id="download-mode-select">
+          <option value="zip">打包为 ZIP 下载</option>
+          <option value="individual">逐个文件下载</option>
+        </select>
+      </label>
+      <p class="settings-note">所有图片均在本地浏览器内核中离线处理，不会上传到任何服务器。PNG 压缩采用颜色量化与无损重编码；TIFF、GIF、PDF、ZIP 均由随包提供的离线引擎完成。</p>
+    </div>
+  </dialog>
+
+  <input id="file-input" type="file" multiple accept="image/*,.tif,.tiff,.avif,.svg,.ico,.bmp,.webp,.gif,.png,.jpg,.jpeg" hidden>
+  <input id="folder-input" type="file" webkitdirectory multiple hidden>
+  <div class="toast" id="toast" hidden role="status"></div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+{
+  "name": "wtools-image-batch",
+  "title": "图片批量处理",
+  "description": "批量图片压缩、格式转换、修改尺寸、添加水印、添加圆角、添加边框、补边留白、裁剪、旋转、翻转、合并为图片、合并为 PDF、合并为 GIF 与手动裁剪。",
+  "version": "1.0.0",
+  "author": "WTools",
+  "main": "index.html",
+  "logo": "logo.svg",
+  "platform": ["win32"],
+  "pluginSetting": {
+    "width": 960,
+    "height": 640,
+    "minWidth": 410,
+    "minHeight": 300
+  },
+  "features": [
+    {
+      "code": "compress",
+      "explain": "批量图片压缩（PNG/JPG/JPEG/WebP/TIFF/AVIF/SVG）",
+      "cmds": [
+        "图片批量处理",
+        "图片压缩",
+        "批量压缩",
+        {
+          "type": "img",
+          "label": "图片批量处理"
+        },
+        {
+          "type": "files",
+          "label": "图片批量处理",
+          "fileType": "file",
+          "match": "/\\.(png|jpe?g|webp|tiff?|avif|bmp|gif|ico|svg)$/i"
+        }
+      ]
+    },
+    { "code": "convert", "cmds": ["格式转换", "图片格式转换", "图片转格式"] },
+    { "code": "resize", "cmds": ["修改尺寸", "图片缩放", "批量改尺寸"] },
+    { "code": "watermark", "cmds": ["添加水印", "图片水印", "批量水印"] },
+    { "code": "round", "cmds": ["添加圆角", "图片圆角"] },
+    { "code": "border", "cmds": ["添加边框", "图片边框"] },
+    { "code": "pad", "cmds": ["补边留白", "图片留白", "图片补边"] },
+    { "code": "crop", "cmds": ["批量裁剪", "图片裁剪"] },
+    { "code": "rotate", "cmds": ["批量旋转", "图片旋转"] },
+    { "code": "flip", "cmds": ["批量翻转", "图片翻转", "镜像翻转"] },
+    { "code": "merge-pdf", "cmds": ["合并为 PDF", "图片合并 PDF", "多图转 PDF"] },
+    { "code": "merge-image", "cmds": ["合并为图片", "图片拼接", "长图拼接"] },
+    { "code": "merge-gif", "cmds": ["合并为 GIF", "合成 GIF", "图片转 GIF"] },
+    { "code": "manual-crop", "cmds": ["手动裁剪", "图片手动裁剪"] }
+  ]
+}
