@@ -45,9 +45,9 @@
     {
       "directory": "wtools-process-killer",
       "category": "system",
-      "minWtoolsVersion": "0.6.9",
+      "minWtoolsVersion": "0.7.0",
       "featured": false,
-      "publishedAt": 1795525713872
+      "publishedAt": 1795771703877
     },
     {
       "directory": "wtools-web-launcher",

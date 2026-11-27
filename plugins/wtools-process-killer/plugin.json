@@ -2,7 +2,7 @@
   "name": "wtools-process-killer",
   "title": "进程与端口管理",
   "author": "WTools",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "查看进程和 TCP / UDP 端口，关闭或重启进程。",
   "main": "index.html",
   "preload": "preload.js",
